@@ -1,6 +1,6 @@
 {
- "name": "IC3 Computing Fundamentals Quest",
- "short_name": "IC3 Quest",
+ "name": "Jmal C's IC3 Quest",
+ "short_name": "Jmal C IC3",
  "start_url": "./quest.html",
  "scope": "./",
  "display": "standalone",
