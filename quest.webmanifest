@@ -1,0 +1,23 @@
+{
+ "name": "IC3 Computing Fundamentals Quest",
+ "short_name": "IC3 Quest",
+ "start_url": "./quest.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#0f1530",
+ "theme_color": "#0f1530",
+ "icons": [
+  {
+   "src": "icons/quest-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any maskable"
+  },
+  {
+   "src": "icons/quest-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  }
+ ]
+}

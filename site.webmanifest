@@ -1,0 +1,23 @@
+{
+ "name": "Mr. Chestnut's IC3 Computing Fundamentals",
+ "short_name": "IC3 Apps",
+ "start_url": "./index.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#f4f7fb",
+ "theme_color": "#1d3557",
+ "icons": [
+  {
+   "src": "icons/home-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any maskable"
+  },
+  {
+   "src": "icons/home-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  }
+ ]
+}
