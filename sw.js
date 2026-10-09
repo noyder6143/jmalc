@@ -1,4 +1,4 @@
-const CACHE='ic3-apps-v3-jmalc';
+const CACHE='ic3-apps-v3';
 const FILES=['./','./index.html','./quest.html','./practice.html','./site.webmanifest','./quest.webmanifest','./practice.webmanifest',
 './icons/home-192.png','./icons/home-512.png','./icons/home-180.png','./icons/quest-192.png','./icons/quest-512.png','./icons/quest-180.png',
 './icons/practice-192.png','./icons/practice-512.png','./icons/practice-180.png'];
