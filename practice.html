@@ -2,6 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Jmal C's IC3 Practice Lab</title>
 <link rel="manifest" href="practice.webmanifest"><meta name="theme-color" content="#0f7c83"><link rel="icon" href="icons/practice-192.png"><link rel="apple-touch-icon" href="icons/practice-180.png"><meta name="apple-mobile-web-app-capable" content="yes">
+<script src="config.js"></script><script src="sync.js"></script>
 <style>
 :root{--ink:#14202e;--muted:#5b6b7d;--bg:#eef3f6;--card:#fff;--line:#d5dee6;--teal:#0f7c83;--teal2:#0b5e64;--amber:#f2a516;--good:#1c8a4a;--bad:#c23b3b;--r:10px}
 *{box-sizing:border-box}html,body{margin:0}body{font:15px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg)}
@@ -77,7 +78,7 @@ const D=JSON.parse(document.getElementById('data').textContent);const B=D.bank,T
 const KEY='ic3lab_v1';let S=load();
 function blank(){return{history:[],missed:{},best:{},stats:{}}}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object')return Object.assign(blank(),s)}catch(e){}return blank()}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.JCSync)JCSync.changed('practice')}
 const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
 function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function rnd(seed){let x=0;for(const ch of seed)x=(x*31+ch.charCodeAt(0))>>>0;return()=>{x=(x*1103515245+12345)>>>0;return x/4294967296}}
@@ -250,5 +251,7 @@ function answerKey(){const where={};T.forEach(t=>t.items.forEach((id,i)=>{(where
  ${b.flag?`<div class="flag small">⚠️ <b>On GMetrix, expect…</b> ${esc(b.flag)}</div>`:''}<div class="small"><b>Appears in:</b> ${esc((where[b.id]||[]).join(', '))}</div></div>`).join('')}</div>`;$('#pr').onclick=()=>window.print()}
 window.__lab={state:()=>S,run:()=>RUN,data:D,grade,go,start,finish};
 go('home');
+// Optional cloud accounts (sync.js on the class site). Without it, progress stays on this device.
+if(window.JCSync)JCSync.attach({app:'practice',mount:'header',get:()=>S,set:v=>{S=Object.assign(blank(),v);save();if(!RUN||RUN.done){const on=$('#nav button.on');if(on&&!RUN)go(on.dataset.v)}}});
 })();
-</script></body></html>
+</script><script>if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script></body></html>

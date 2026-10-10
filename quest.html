@@ -2,6 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Jmal C's IC3 Quest</title>
 <link rel="manifest" href="quest.webmanifest"><meta name="theme-color" content="#0f1530"><link rel="icon" href="icons/quest-192.png"><link rel="apple-touch-icon" href="icons/quest-180.png"><meta name="apple-mobile-web-app-capable" content="yes">
+<script src="config.js"></script><script src="sync.js"></script>
 <style>
 :root{--bg:#0f1530;--panel:#1a2250;--panel2:#232d66;--ink:#f3f5ff;--muted:#aab3e0;--acc:#ffcc33;--good:#2ecc71;--bad:#ff5c6c;--blue:#4da3ff;--r:16px}
 *{box-sizing:border-box}html,body{margin:0}
@@ -71,7 +72,7 @@ const BADGES=[].concat(D.levels.map(L=>({id:'lvl_'+L.id,icon:L.icon,name:L.name+
 let S=load();
 function blank(){return {name:'',xp:0,seen:{},quiz:{},qok:{},games:{},sims:{},mission:{},badges:[],flips:0,days:[],boss:0}}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object')return Object.assign(blank(),s)}catch(e){}return blank()}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.JCSync)JCSync.changed('quest')}
 function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function md(t){return esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')}
 function $(s,r){return (r||document).querySelector(s)}
@@ -94,7 +95,8 @@ function lvlProg(L){const seen=(S.seen[L.id]||[]).length,sims=Object.keys(S.sims
  const tot=L.lessons.length+L.sims.length+L.games.length+L.mission.length+1;return Math.round(100*(seen+sims+games+m+q)/tot)}
 function nextLevel(){for(const L of D.levels){if((S.quiz[L.id]||0)<80||!((S.mission[L.id]||[])[2]))return L.id}return 'boss'}
 // ---------- views
-function go(v,arg){window.scrollTo(0,0);streak();if(v==='map')mapView();else if(v==='level')levelView(arg.id,arg.tab||'learn');else if(v==='boss')bossView();else if(v==='badges')badgeView()}
+let VIEW='map';
+function go(v,arg){VIEW=v;window.scrollTo(0,0);streak();if(v==='map')mapView();else if(v==='level')levelView(arg.id,arg.tab||'learn');else if(v==='boss')bossView();else if(v==='badges')badgeView()}
 function mapView(){const app=$('#app');app.innerHTML='';const nx=nextLevel();
  if(!S.name){app.appendChild(h(`<div class="card"><h2>👋 Welcome to the Quest!</h2><p>Digital Literacy Class. Seven levels, one boss, and you'll be ready for IC3 Computing Fundamentals. What should we call you?</p>
  <div class="row"><input id="nm" aria-label="Your first name" placeholder="First name" style="font:inherit;padding:.5em;border-radius:10px;border:0;max-width:240px"><button class="primary" id="nmgo">Let's go</button></div></div>`));
@@ -110,7 +112,7 @@ function mapView(){const app=$('#app');app.innerHTML='';const nx=nextLevel();
  const B=h(`<div class="lvl boss" role="button" tabindex="0">${nx==='boss'?'<span class="next">⭐ NEXT</span>':''}<div class="ic">${D.boss.icon}</div><small>FINAL</small><h3>${esc(D.boss.name)}</h3><small>GMetrix Practice Exams + Quest Boss Battle</small>
  <div class="prog"><i style="width:${S.boss||0}%"></i></div><small>best boss ${S.boss?S.boss+'%':'–'} ${S.badges.includes('boss')?'🏅':''}</small></div>`).firstChild;
  B.onclick=()=>go('boss');B.onkeydown=e=>{if(e.key==='Enter')B.click()};g.appendChild(B);app.appendChild(g);
- app.appendChild(h(`<div class="card muted" style="margin-top:1rem;font-size:.85rem">📌 <b>Today's version:</b> IC3 GS5 was built around Windows 10 and Office 2016. GMetrix still uses those screens, so this Quest teaches them first and adds “Today's version” notes for Windows 11 and Microsoft 365. Progress saves in this browser only (no account, works offline).</div>`));
+ app.appendChild(h(`<div class="card muted" style="margin-top:1rem;font-size:.85rem">📌 <b>Today's version:</b> IC3 GS5 was built around Windows 10 and Office 2016. GMetrix still uses those screens, so this Quest teaches them first and adds “Today's version” notes for Windows 11 and Microsoft 365. ${window.JCSync&&JCSync.user()?'You are signed in, so progress also saves to your account.':'Progress saves in this browser (works offline).'}</div>`));
  $('#bdg').onclick=()=>go('badges');$('#rst').onclick=()=>{if(confirm('Erase ALL your Quest progress on this device?')){S=blank();save();hdr();mapView()}}}
 function levelView(id,tab){const L=D.levels.find(x=>x.id===id);const app=$('#app');
  const tabs=[['learn','📖 Learn'],['cards','🃏 Cards'],['sims','🖱️ Sims'],['games','🎮 Games'],['quiz','❓ Quiz'],['mission','🎯 GMetrix Mission']];
@@ -202,5 +204,8 @@ function badgeView(){const app=$('#app');const [r,nx]=rank();app.innerHTML=`<div
 $('#home').onclick=()=>go('map');$('#home').onkeydown=e=>{if(e.key==='Enter')go('map')};
 hdr();go('map');
 window.__quest={state:()=>S};
+// Optional cloud accounts (sync.js on the class site). Without it, progress stays on this device.
+if(window.JCSync)JCSync.attach({app:'quest',mount:'.hstat',get:()=>S,set:v=>{S=Object.assign(blank(),v);save();hdr();if(VIEW==='map'||VIEW==='badges')go(VIEW)}});
+if(window.JCSync)JCSync.onAuth(()=>{hdr();if(VIEW==='map')go('map')});
 })();
-</script></body></html>
+</script><script>if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script></body></html>

@@ -3,6 +3,7 @@
 <title>Jmal C's Digital Literacy Class</title>
 <link rel="manifest" href="site.webmanifest"><meta name="theme-color" content="#1d3557">
 <link rel="icon" href="icons/home-192.png"><link rel="apple-touch-icon" href="icons/home-180.png">
+<script src="config.js"></script><script src="sync.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#f4f7fb;color:#14202e;line-height:1.5}
 header{background:linear-gradient(120deg,#1d3557,#0f7c83);color:#fff;padding:2.2rem 1.2rem 2.6rem;text-align:center}
@@ -14,8 +15,9 @@ a.btn{display:block;text-align:center;text-decoration:none;font-weight:700;font-
 a.quest{background:#ffcc33;color:#1a1a1a}a.lab{background:#0f7c83;color:#fff}a.btn:focus-visible{outline:3px solid #1d3557;outline-offset:3px}
 .note{max-width:860px;margin:0 auto 2.5rem;padding:0 1rem}.note div{background:#fff;border-left:5px solid #0f7c83;border-radius:12px;padding:1rem 1.2rem;color:#2c3a4b}
 .note h3{margin:.2rem 0 .4rem;font-size:1rem}.note ul{margin:.3rem 0 0;padding-left:1.2rem}
+#acct{margin-top:.9rem}#acct:empty{display:none}footer{text-align:center;padding:0 1rem 2rem;font-size:.8rem;color:#7a8796}footer a{color:#7a8796}
 </style></head><body>
-<header><h1>Jmal C's Digital Literacy Class</h1><p style="opacity:.95;font-size:1.05rem;margin:0 0 .35rem">IC3 Computing Fundamentals</p><p>Learn it, practice it, pass it. Pick an app to get started.</p></header>
+<header><h1>Jmal C's Digital Literacy Class</h1><p style="opacity:.95;font-size:1.05rem;margin:0 0 .35rem">IC3 Computing Fundamentals</p><p>Learn it, practice it, pass it. Pick an app to get started.</p><div id="acct"></div></header>
 <main>
 <div class="card"><div class="emoji">🎮</div><h2>Computing Fundamentals Quest</h2>
 <p>Learn every topic as a game. Seven levels plus a Boss Level, with short lessons, flashcards, matching games, Windows practice clicks, Spot the Scam, quizzes, XP, and badges.</p>
@@ -27,9 +29,12 @@ a.quest{background:#ffcc33;color:#1a1a1a}a.lab{background:#0f7c83;color:#fff}a.b
 <section class="note"><div>
 <h3>Good to know</h3>
 <ul>
-<li>Your progress saves on this device and in this browser only. Use the same phone or Chromebook each time so you keep your XP and scores.</li>
+<li id="local-note">Your progress saves on this device and in this browser only. Use the same phone or Chromebook each time so you keep your XP and scores.</li>
+<li id="cloud-note" hidden>Want your progress on any device? Tap <b>☁️ Sign in</b> and make a free class account with the class code from your teacher. It's optional.</li>
 <li>Add it to your home screen: on Chrome, tap the menu and choose "Install app" or "Add to Home screen". On iPhone, tap Share, then "Add to Home Screen".</li>
 <li>After you open each app once, it works offline too.</li>
 </ul></div></section>
+<footer><a href="teacher.html" rel="nofollow">Teacher</a></footer>
+<script>if(window.JCSync&&JCSync.enabled){document.getElementById("cloud-note").hidden=false;document.getElementById("local-note").textContent="Without an account, your progress saves on this device and in this browser only.";JCSync.attach({mount:"#acct"})}</script>
 <script>if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
 </body></html>
