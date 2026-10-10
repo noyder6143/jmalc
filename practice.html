@@ -85,7 +85,11 @@ function rnd(seed){let x=0;for(const ch of seed)x=(x*31+ch.charCodeAt(0))>>>0;re
 function shuffle(a,seed){const r=seed?rnd(seed):Math.random;a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 let RUN=null,TIMER=null;
 function nav(v){$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
-function go(v,a){if(RUN&&!RUN.done&&v!=='run'&&!confirm('Leave this test? Your answers for this attempt will be lost.'))return;if(v!=='run'&&v!=='results'){stopTimer();RUN=null}window.scrollTo(0,0);nav(v);
+// Tell the class dashboard where the student is (only sent when signed in).
+function here(t){if(window.JCSync&&JCSync.here)JCSync.here('practice',t)}
+const HERE={home:'Home',library:'Test library',final:'Final Exam Review (start page)',custom:'Custom quiz builder',missed:'Missed deck',history:'Score history',key:'Answer key'};
+function runLabel(R){const t=T.find(x=>x.id===R.id),k=t&&t.kind;return (k==='topic'?'Topic test: ':'')+R.name}
+function go(v,a){if(RUN&&!RUN.done&&v!=='run'&&!confirm('Leave this test? Your answers for this attempt will be lost.'))return;if(v!=='run'&&v!=='results'){stopTimer();RUN=null}window.scrollTo(0,0);nav(v);if(HERE[v])here(HERE[v]);
  ({home,library,final:finalExam,custom,missed,history,key:answerKey,run:renderRun,results})[v](a)}
 $$('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));$('#logo').onclick=()=>go('home');
 // ---------- stats
@@ -147,7 +151,7 @@ function start(cfg){RUN=Object.assign(cfg,{i:0,resp:{},flags:{},checked:{},done:
  go('run')}
 function stopTimer(){if(TIMER){clearInterval(TIMER);TIMER=null}}
 function fmt(s){s=Math.max(0,s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
-function renderRun(){const R=RUN,it=R.items[R.i],b=B[it.id],train=R.mode==='train',chk=R.checked[R.i];
+function renderRun(){const R=RUN,it=R.items[R.i],b=B[it.id],train=R.mode==='train',chk=R.checked[R.i];here(runLabel(R)+', Q'+(R.i+1)+' of '+R.items.length+' ('+(train?'Training':'Testing')+' Mode)');
  $('#app').innerHTML=`<div class="card"><div class="qhead"><b>${esc(R.name)}</b><span class="pill">${train?'Training Mode':'Testing Mode'}</span><span class="sp"></span>
  <span class="muted small">Question ${R.i+1} of ${R.items.length}</span>${!train&&R.minutes?`<span class="timer" id="tm">${fmt(R.left)}</span>`:''}</div>
  <div class="small muted"><span class="pill">${esc(TOP[b.topic])}</span><span class="pill">${esc(TYPEN[b.type])}</span><span class="pill">Obj ${esc(b.od.join(', '))}</span></div>
@@ -233,7 +237,7 @@ function finish(){const R=RUN;stopTimer();R.done=true;let c=0;const by={};R.item
  const byd={};R.items.forEach((x,k)=>{const b=B[x.id],ok=grade(b,R.resp[k]);const t=byd[b.dom]=byd[b.dom]||{c:0,n:0};t.n++;if(ok)t.c++});
  const n=R.items.length,pct=Math.round(100*c/n),used=Math.round((Date.now()-R.t0)/1000);const h={date:new Date().toISOString(),test:R.id,name:R.name,mode:R.mode,c,n,pct,by,time:fmt(used)};if(R.final)h.byd=byd;
  S.history.push(h);S.history=S.history.slice(-300);if(R.id!=='custom'&&R.id!=='missed'){const k=R.id+':'+R.mode;S.best[k]=Math.max(S.best[k]||0,pct)}save();go('results',h)}
-function results(h){const R=RUN;const miss=R?R.items.map((x,k)=>({x,k})).filter(o=>!grade(B[o.x.id],R.resp[o.k])):[];
+function results(h){const R=RUN;here((R?runLabel(R):h.name)+': score report ('+h.pct+'%)');const miss=R?R.items.map((x,k)=>({x,k})).filter(o=>!grade(B[o.x.id],R.resp[o.k])):[];
  $('#app').innerHTML=`<div class="card"><h1>${esc(h.name)}: score report</h1><div class="row"><span class="score ${h.pct>=80?'pass':'failc'}">${h.pct}%</span><span>${h.c} of ${h.n} correct · ${h.mode==='test'?'Testing':'Training'} Mode · time ${h.time}</span></div>
  <p>${h.pct>=80?'✅ You hit the 80% target. Do it again in Testing Mode to lock it in.':'🎯 The target is 80%. Review the missed items below. They’re also in your Missed deck.'}</p>
  <h2>${h.byd?'By domain':'By topic'}</h2><table class="t"><tr><th>${h.byd?'Domain':'Topic'}</th><th>Score</th><th></th></tr>${Object.entries(h.byd||h.by).map(([k,v])=>{const p=Math.round(100*v.c/v.n);return `<tr><td>${esc(h.byd?k+'. '+DOM[k]:TOP[k])}</td><td>${v.c}/${v.n} (${p}%)</td><td style="width:40%"><div class="bar"><i style="width:${p}%;background:${p>=80?'#1c8a4a':'#f2a516'}"></i></div></td></tr>`}).join('')}</table>

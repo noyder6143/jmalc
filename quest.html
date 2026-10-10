@@ -96,8 +96,10 @@ function lvlProg(L){const seen=(S.seen[L.id]||[]).length,sims=Object.keys(S.sims
 function nextLevel(){for(const L of D.levels){if((S.quiz[L.id]||0)<80||!((S.mission[L.id]||[])[2]))return L.id}return 'boss'}
 // ---------- views
 let VIEW='map';
+// Tell the class dashboard where the student is (only sent when signed in).
+function here(t){if(window.JCSync&&JCSync.here)JCSync.here('quest',t)}
 function go(v,arg){VIEW=v;window.scrollTo(0,0);streak();if(v==='map')mapView();else if(v==='level')levelView(arg.id,arg.tab||'learn');else if(v==='boss')bossView();else if(v==='badges')badgeView()}
-function mapView(){const app=$('#app');app.innerHTML='';const nx=nextLevel();
+function mapView(){here('Level Map');const app=$('#app');app.innerHTML='';const nx=nextLevel();
  if(!S.name){app.appendChild(h(`<div class="card"><h2>👋 Welcome to the Quest!</h2><p>Digital Literacy Class. Seven levels, one boss, and you'll be ready for IC3 Computing Fundamentals. What should we call you?</p>
  <div class="row"><input id="nm" aria-label="Your first name" placeholder="First name" style="font:inherit;padding:.5em;border-radius:10px;border:0;max-width:240px"><button class="primary" id="nmgo">Let's go</button></div></div>`));
  $('#nmgo').onclick=()=>{const v=$('#nm').value.trim();if(v){S.name=v.slice(0,30);save();hdr();mapView()}}}
@@ -114,13 +116,15 @@ function mapView(){const app=$('#app');app.innerHTML='';const nx=nextLevel();
  B.onclick=()=>go('boss');B.onkeydown=e=>{if(e.key==='Enter')B.click()};g.appendChild(B);app.appendChild(g);
  app.appendChild(h(`<div class="card muted" style="margin-top:1rem;font-size:.85rem">📌 <b>Today's version:</b> IC3 GS5 was built around Windows 10 and Office 2016. GMetrix still uses those screens, so this Quest teaches them first and adds “Today's version” notes for Windows 11 and Microsoft 365. ${window.JCSync&&JCSync.user()?'You are signed in, so progress also saves to your account.':'Progress saves in this browser (works offline).'}</div>`));
  $('#bdg').onclick=()=>go('badges');$('#rst').onclick=()=>{if(confirm('Erase ALL your Quest progress on this device?')){S=blank();save();hdr();mapView()}}}
+function lvlName(L){return 'Level '+L.n+': '+L.name}
 function levelView(id,tab){const L=D.levels.find(x=>x.id===id);const app=$('#app');
  const tabs=[['learn','📖 Learn'],['cards','🃏 Cards'],['sims','🖱️ Sims'],['games','🎮 Games'],['quiz','❓ Quiz'],['mission','🎯 GMetrix Mission']];
+ here(lvlName(L)+', '+({learn:'Lessons',cards:'Flashcards',sims:'Sims',games:'Games',quiz:'Quiz',mission:'GMetrix Mission'})[tab]);
  app.innerHTML=`<div class="row"><button class="ghost" id="back">← Map</button><h2 class="sp" style="margin:0">${L.icon} Level ${L.n}: ${esc(L.name)}</h2></div>
  <div class="tabs" role="tablist">${tabs.map(t=>`<button role="tab" data-t="${t[0]}" class="${t[0]===tab?'on':''}">${t[1]}</button>`).join('')}</div><div id="pane"></div>`;
  $('#back').onclick=()=>go('map');app.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>levelView(id,b.dataset.t));
  const P=$('#pane');({learn:learn,cards:flash,sims:simList,games:gameList,quiz:quiz,mission:mission})[tab](L,P)}
-function learn(L,P,i){i=i||0;const ls=L.lessons[i];S.seen[L.id]=S.seen[L.id]||[];if(!S.seen[L.id].includes(i)){S.seen[L.id].push(i);addXP(5,'lesson')}
+function learn(L,P,i){i=i||0;const ls=L.lessons[i];here(lvlName(L)+', Lesson '+(i+1)+' of '+L.lessons.length);S.seen[L.id]=S.seen[L.id]||[];if(!S.seen[L.id].includes(i)){S.seen[L.id].push(i);addXP(5,'lesson')}
  P.innerHTML=`<div class="card lesson"><div class="muted">Card ${i+1} of ${L.lessons.length}</div><h3>${esc(ls.t)}</h3><div>${ls.b}</div>
  ${ls.ex?`<div class="ex">🗽 <b>Real life:</b> ${esc(ls.ex)}</div>`:''}${ls.today?`<div class="today">📌 <b>Today's version:</b> ${esc(ls.today)}</div>`:''}
  <div class="od">Official objective${(ls.od||[]).length>1?'s':''}: ${(ls.od||[]).join(', ')}</div></div>
@@ -136,7 +140,7 @@ function simList(L,P){P.innerHTML='<div class="muted" style="margin-bottom:.6rem
  L.sims.forEach((s,k)=>{const done=S.sims[L.id+':'+k];const e=h(`<div class="lvl" role="button" tabindex="0"><div class="ic">${done?'✅':'🖱️'}</div><h3>${esc(s.title)}</h3><small>${esc(s.prompt)}</small></div>`).firstChild;
  e.onclick=()=>sim(L,P,k);e.onkeydown=ev=>{if(ev.key==='Enter')e.click()};g.appendChild(e)});P.appendChild(g)}
 function stepText(st){return st.type==='input'?`In <b>${esc(st.label)}</b>, type <b>${esc(st.a)}</b>.`:`${esc(st.screen)}: choose <b>${esc(st.opts[st.a])}</b>.`}
-function sim(L,P,k,j){j=j||0;const s=L.sims[k];
+function sim(L,P,k,j){j=j||0;const s=L.sims[k];here(lvlName(L)+', Sim: '+s.title);
  if(j>=s.steps.length){const first=once('sims',L.id+':'+k,25,'sim');if(Object.keys(S.sims).length>=15)badge('sim');
   P.innerHTML=`<div class="card"><h3>🎉 Sim complete: ${esc(s.title)}</h3>${first?'':'<p class="muted">(Replay. XP was already earned.)</p>'}<ol class="steps">${s.steps.map(x=>'<li>'+stepText(x)+'</li>').join('')}</ol>
   ${s.today?`<div class="today">📌 <b>Today's version:</b> ${esc(s.today)}</div>`:''}<div class="row" style="margin-top:.8rem"><button id="again">↻ Again</button><button class="primary" id="list">More sims</button></div></div>`;
@@ -152,7 +156,7 @@ function sim(L,P,k,j){j=j||0;const s=L.sims[k];
  $('#wt').onclick=()=>{$('#wtx').innerHTML='<ol class="steps">'+s.steps.map(x=>'<li>'+stepText(x)+'</li>').join('')+'</ol>'};$('#quit').onclick=()=>simList(L,P)}
 function gameList(L,P){P.innerHTML='';L.games.forEach((g,k)=>{const done=S.games[L.id+':'+k];const e=h(`<div class="card row"><div class="sp"><b>${g.type==='match'?'🔗':g.type==='scam'?'🕵️':'🗂️'} ${esc(g.title)}</b> ${done?'✅':''}<div class="muted">${g.type==='match'?'Match each term to its meaning: tap one then the other, or drag.':g.type==='scam'?'Read each message. Scam or legit?':'Sort each item into the right bin.'}</div></div><button class="primary">Play</button></div>`).firstChild;
  e.querySelector('button').onclick=()=>g.type==='match'?match(L,P,k):sortg(L,P,k);P.appendChild(e)})}
-function match(L,P,k){const g=L.games[k];const pairs=g.pairs.map((p,i)=>({t:p[0],d:p[1],i}));let left=shuffle(pairs),right=shuffle(pairs),sel=null,got=0,miss=0;
+function match(L,P,k){const g=L.games[k];here(lvlName(L)+', Game: '+g.title);const pairs=g.pairs.map((p,i)=>({t:p[0],d:p[1],i}));let left=shuffle(pairs),right=shuffle(pairs),sel=null,got=0,miss=0;
  P.innerHTML=`<div class="card"><div class="row"><b class="sp">🔗 ${esc(g.title)}</b><span id="ms" class="muted"></span></div><div class="match"><div id="L"></div><div id="R"></div></div><div class="row" style="margin-top:.6rem"><button class="ghost" id="bk">← Games</button></div></div>`;
  const Lc=$('#L'),Rc=$('#R');$('#bk').onclick=()=>gameList(L,P);
  function upd(){$('#ms').textContent=got+'/'+pairs.length+' matched · '+miss+' misses'}upd();
@@ -167,7 +171,7 @@ function match(L,P,k){const g=L.games[k];const pairs=g.pairs.map((p,i)=>({t:p[0]
   b.onclick=()=>{if(b.disabled)return;if(sel===null){toast('Pick a term on the left first');return}b.classList.add('sel');tryPair(sel,p.i)};
   b.ondragover=e=>{if(!b.disabled){e.preventDefault();b.classList.add('over')}};b.ondragleave=()=>b.classList.remove('over');
   b.ondrop=e=>{e.preventDefault();b.classList.remove('over');const li=+e.dataTransfer.getData('text/plain');tryPair(li,p.i)};Rc.appendChild(b)})}
-function sortg(L,P,k){const g=L.games[k];const items=shuffle(g.items);let i=0,ok=0;
+function sortg(L,P,k){const g=L.games[k];here(lvlName(L)+', Game: '+g.title);const items=shuffle(g.items);let i=0,ok=0;
  function draw(){if(i>=items.length){const pass=g.type==='scam'?ok>=Math.min(7,items.length):ok>=Math.ceil(items.length*.6);if(pass)once('games',L.id+':'+k,20,g.type==='scam'?'scam buster':'sort');if(g.type==='scam'&&ok>=Math.min(7,items.length))badge('scam');
   P.innerHTML=`<div class="card"><h3>${ok}/${items.length} correct ${ok===items.length?'🔥':''}</h3><p>${pass?'Nice work!':'Try again. Read each explanation.'}</p><div class="row"><button id="ag">↻ Play again</button><button class="primary" id="bk">Games</button></div></div>`;
   $('#ag').onclick=()=>sortg(L,P,k);$('#bk').onclick=()=>gameList(L,P);return}
@@ -176,11 +180,11 @@ function sortg(L,P,k){const g=L.games[k];const items=shuffle(g.items);let i=0,ok
  P.querySelectorAll('.bins button').forEach(b=>b.onclick=()=>{const x=+b.dataset.x,r=x===it[1];if(r)ok++;P.querySelectorAll('.bins button').forEach(z=>z.disabled=true);
   $('#fb').innerHTML=`<div class="fb ${r?'ok':'no'}">${r?'✅ Correct!':'❌ Not quite. Answer: '+esc(g.bins[it[1]])}<br>${esc(it[2])}</div><button class="primary" id="nx" style="margin-top:.6rem">Next →</button>`;$('#nx').onclick=()=>{i++;draw()};$('#nx').focus()})}draw()}
 function runQuiz(P,pool,n,title,onDone){const qs=shuffle(pool).slice(0,Math.min(n,pool.length)).map(q=>{const order=shuffle(q.c.map((c,i)=>i));return Object.assign({},q,{order})});let i=0,ok=0,missed=[];
- function draw(){if(i>=qs.length){const pct=Math.round(100*ok/qs.length);onDone(pct);
+ function draw(){if(i>=qs.length){const pct=Math.round(100*ok/qs.length);here(title+': results ('+pct+'%)');onDone(pct);
   P.innerHTML=`<div class="card"><h2>${pct>=80?'🏆':'💪'} ${title}: ${ok}/${qs.length} (${pct}%)</h2><p>${pct>=80?'80%+! You hit the GMetrix target. Now prove it in Testing Mode.':'Goal is 80%+. Review the misses below, then go again.'}</p>
   ${missed.length?'<h3>Review</h3>'+missed.map(q=>`<div class="fb no"><b>${esc(q.q)}</b><br>✔ ${esc(q.c[q.a])}<br><span>${esc(q.why)}</span></div>`).join(''):''}
   <div class="row" style="margin-top:.8rem"><button class="primary" id="ag">↻ New quiz</button></div></div>`;$('#ag').onclick=()=>runQuiz(P,pool,n,title,onDone);return}
- const q=qs[i];P.innerHTML=`<div class="card"><div class="row"><b class="sp">❓ ${esc(title)}</b><span class="muted">Q ${i+1}/${qs.length} · ${ok} right</span></div><h3>${esc(q.q)}</h3><div id="op"></div><div id="fb" aria-live="polite"></div></div>`;
+ const q=qs[i];here(title+', Q'+(i+1)+' of '+qs.length);P.innerHTML=`<div class="card"><div class="row"><b class="sp">❓ ${esc(title)}</b><span class="muted">Q ${i+1}/${qs.length} · ${ok} right</span></div><h3>${esc(q.q)}</h3><div id="op"></div><div id="fb" aria-live="polite"></div></div>`;
  const O=$('#op');q.order.forEach(ci=>{const b=document.createElement('button');b.className='opt';b.textContent=q.c[ci];b.onclick=()=>{const r=ci===q.a;
   O.querySelectorAll('button').forEach(z=>{z.disabled=true;if(+z.dataset.ci===q.a)z.classList.add('right')});if(!r){b.classList.add('wrong');missed.push(q)}else{ok++;const key=q._k;if(key&&!S.qok[key]){S.qok[key]=1;addXP(10,'correct')}}
   $('#fb').innerHTML=`<div class="fb ${r?'ok':'no'}">${r?'✅ Correct!':'❌ Answer: '+esc(q.c[q.a])}<br>${esc(q.why)}</div><button class="primary" id="nx" style="margin-top:.6rem">${i<qs.length-1?'Next →':'See score'}</button>`;$('#nx').onclick=()=>{i++;draw()};$('#nx').focus()};b.dataset.ci=ci;O.appendChild(b)})}draw()}
@@ -190,14 +194,14 @@ function mission(L,P){const m=S.mission[L.id]=S.mission[L.id]||[];P.innerHTML=`<
  ${L.mission.map((t,i)=>`<label class="chk"><input type="checkbox" data-i="${i}" ${m[i]?'checked':''}><span>${esc(t)}</span></label>`).join('')}
  <p class="muted" style="font-size:.85rem">Training Mode = hints and feedback, no timer. Testing Mode = timed, no help, like the real exam.</p></div>`;
  P.querySelectorAll('input').forEach(c=>c.onchange=()=>{const i=+c.dataset.i;m[i]=c.checked;save();if(c.checked){once('mission',L.id+':'+i,15,'mission');badge('mission')}})}
-function bossView(){const app=$('#app');const pool=[];D.levels.forEach(L=>L.quiz.forEach((q,i)=>{q._k=L.id+':'+i;pool.push(q)}));const m=S.mission.boss=S.mission.boss||[];
+function bossView(){here('Boss Level');const app=$('#app');const pool=[];D.levels.forEach(L=>L.quiz.forEach((q,i)=>{q._k=L.id+':'+i;pool.push(q)}));const m=S.mission.boss=S.mission.boss||[];
  app.innerHTML=`<div class="row"><button class="ghost" id="back">← Map</button><h2 class="sp" style="margin:0">${D.boss.icon} ${esc(D.boss.name)}</h2></div>
  <div class="card"><h3>🎯 Boss Mission (GMetrix Practice Exams)</h3>${D.boss.mission.map((t,i)=>`<label class="chk"><input type="checkbox" data-i="${i}" ${m[i]?'checked':''}><span>${esc(t)}</span></label>`).join('')}
  <p class="muted" style="font-size:.85rem">📌 Today's version: Certiport retired the GS5 simulated exam on Dec 31, 2025. GS5 is now offered as a selected-response (multiple-choice-style) exam, and GS6 is the newest version. GMetrix practice still includes click-through sims. They're great practice either way.</p></div>
  <div id="bp" class="card"><h3>🐉 Quest Boss Battle</h3><p>20 random questions from all 7 levels (${pool.length} in the pool). Beat 80% to slay the dragon.</p><button class="primary" id="fight">Fight!</button></div>`;
  $('#back').onclick=()=>go('map');app.querySelectorAll('input').forEach(c=>c.onchange=()=>{m[+c.dataset.i]=c.checked;save();if(c.checked){once('mission','boss:'+c.dataset.i,15,'mission');badge('mission')}});
  $('#fight').onclick=()=>runQuiz($('#bp'),pool,20,'Boss Battle',pct=>{S.boss=Math.max(S.boss||0,pct);save();if(pct>=80)badge('boss')})}
-function badgeView(){const app=$('#app');const [r,nx]=rank();app.innerHTML=`<div class="row"><button class="ghost" id="back">← Map</button><h2 class="sp" style="margin:0">🏅 Badges & Rank</h2></div>
+function badgeView(){here('Badges & Rank');const app=$('#app');const [r,nx]=rank();app.innerHTML=`<div class="row"><button class="ghost" id="back">← Map</button><h2 class="sp" style="margin:0">🏅 Badges & Rank</h2></div>
  <div class="card"><p>Rank: <b>${r[1]}</b> · ${S.xp} XP${nx?' · next: '+nx[1]+' at '+nx[0]+' XP':''} · 🔥 streak ${streak()} day(s)</p>
  <p class="muted">XP: lesson +5 · correct answer +10 (first time) · sim +25 · match +30 · sort/scam +20 · mission step +15</p>
  ${BADGES.map(b=>`<span class="badge ${S.badges.includes(b.id)?'':'off'}"><b>${b.icon}</b>${esc(b.name)}<small class="muted">${esc(b.how)}</small></span>`).join('')}</div>`;$('#back').onclick=()=>go('map')}

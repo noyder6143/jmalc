@@ -24,8 +24,13 @@ tr.det{cursor:default;background:#fafcfd}tr.det td{white-space:normal}
 .pct{display:inline-block;min-width:3.2em;text-align:center;border-radius:8px;padding:.05em .4em;font-weight:700}.hi{background:#dcf3e5;color:#11643a}.mid{background:#fff1d1;color:#7a5300}.lo{background:#fde3e6;color:#8a1626}.na{color:#9aa6b2}
 .bar{height:10px;background:#e7edf3;border-radius:6px;overflow:hidden;min-width:90px}.bar i{display:block;height:100%;background:#0f7c83}
 .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}.dgrid h4{margin:.2rem 0 .4rem}
+.dot{display:inline-block;width:.6em;height:.6em;border-radius:50%;background:#c7d0da;margin-right:.45em;vertical-align:.05em}.dot.on{background:#1c9a50;box-shadow:0 0 0 3px rgba(28,154,80,.18)}
+.st{display:inline-block;font-size:.82rem;color:#5a6a7d}.st.on{background:#dcf3e5;color:#11643a;font-weight:700;border-radius:999px;padding:.1em .6em}
+td .on-txt{display:inline-block;white-space:normal;min-width:170px;max-width:260px;font-size:.85rem;line-height:1.3}
+.stat.now{background:#e3f5ea}
+.rn{list-style:none;margin:0;padding:0}.rn li{display:flex;gap:.3rem 1rem;flex-wrap:wrap;padding:.45rem 0;border-bottom:1px solid #e9eef3}.rn li:last-child{border-bottom:0}.rn li b{min-width:9em}.rn li b::before{content:'';display:inline-block;width:.6em;height:.6em;border-radius:50%;background:#1c9a50;margin-right:.45em}#upd{margin-left:auto}#upd.bad{color:#8a1626}
 .chips span{display:inline-block;background:#eef2f7;border-radius:999px;padding:.1em .55em;margin:.15em;font-size:.82rem}
-@media(max-width:600px){header h1{font-size:1.05rem}main{padding:0 .6rem}.card{padding:.9rem}th,td{padding:.45rem .45rem;font-size:.82rem}}
+@media(max-width:600px){#upd{flex-basis:100%;order:3;margin-left:0}td .on-txt{min-width:140px;max-width:180px}header h1{font-size:1.05rem}main{padding:0 .6rem}.card{padding:.9rem}th,td{padding:.45rem .45rem;font-size:.82rem}}
 </style></head><body>
 <header><div><h1>📊 Teacher Dashboard</h1><small>Jmal C's Digital Literacy Class</small></div><span class="sp"></span><span id="who" class="small"></span><a href="./" class="small">Class page</a></header>
 <main id="app"><div class="card"><p class="muted">Loading...</p></div></main>
@@ -34,7 +39,12 @@ tr.det{cursor:default;background:#fafcfd}tr.det td{white-space:normal}
 var M=window.JC_META||{ranks:[[0,'Newbie']],levels:[],badges:[],tests:[],domains:{}};
 var $=function(s,r){return (r||document).querySelector(s)};
 function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-var app=$('#app'),ROWS=[],SORT={k:'name',d:1},OPEN={},DOMAVG={},CLASS='';
+var app=$('#app'),ROWS=[],SORT={k:'status',d:1},OPEN={},DOMAVG={},CLASS='',LOADED=0,LOADING=false,REFRESH_ERR=false;
+var ACTIVE_MS=120000,REFRESH_MS=window.JC_REFRESH_MS||30000;
+function ago(ms){var m=Math.floor(ms/6e4);if(m<1)return 'just now';if(m<60)return m+' min ago';var h=Math.floor(m/60);if(h<24)return h+(h===1?' hour ago':' hours ago');var d=Math.floor(h/24);return d+(d===1?' day ago':' days ago')}
+function age(r){return r.seen?Math.max(0,Date.now()-new Date(r.seen)):null}
+function isActive(r){var a=age(r);return a!=null&&a<ACTIVE_MS}
+function statusText(r){var a=age(r);return a==null?'Not active yet':a<ACTIVE_MS?'Active now':'Last seen '+ago(a)}
 function card(h){app.innerHTML='<div class="card">'+h+'</div>'}
 function pct(v){if(v==null||isNaN(v))return '<span class="na">–</span>';var c=v>=80?'hi':v>=60?'mid':'lo';return '<span class="pct '+c+'">'+Math.round(v)+'%</span>'}
 function when(d){if(!d)return '–';var t=new Date(d),days=Math.floor((Date.now()-t)/864e5);return days<=0?'Today':days===1?'Yesterday':days<7?days+' days ago':t.toLocaleDateString()}
@@ -54,17 +64,22 @@ function route(){
  if(!p||p.role!=='teacher'){card('<h2>This is not a teacher account yet</h2><p>You are signed in as <b>'+esc(u.email)+'</b>. To see your class, run the "make me a teacher" line from <b>SETUP.md</b> (step 9) in the Supabase SQL editor, then reload this page.</p><button class="pri" onclick="location.reload()">Reload</button>');return}
  if(!p.class_code){card('<h2>Your account has no class code</h2><p>Add one in the Supabase Table Editor (profiles table, class_code column), using the same code your students type when they sign up.</p>');return}
  CLASS=p.class_code;load()}
-function load(){
- card('<p class="muted">Loading class '+esc(CLASS)+'...</p>');
+function load(silent){
+ if(LOADING)return;LOADING=true;
+ if(!silent||!LOADED)card('<p class="muted">Loading class '+esc(CLASS)+'...</p>');
  var c=JCSync.client(),me=JCSync.user().id;
  Promise.all([c.from('profiles').select('id,display_name,class_code,role,created_at'),c.from('progress').select('user_id,app,xp,best_scores,data,updated_at'),c.from('attempts').select('user_id,test_id,mode,score,total,by_domain,taken_at').order('taken_at',{ascending:true})]).then(function(r){
   for(var i=0;i<3;i++)if(r[i].error)throw r[i].error;
-  build(r[0].data.filter(function(x){return x.id!==me&&x.class_code===CLASS}),r[1].data||[],r[2].data||[]);render()}).catch(function(e){card('<h2>Could not load your class</h2><p class="muted">'+esc(e&&e.message||e)+'</p><button class="pri" id="rt">Try again</button>');$('#rt').onclick=load})}
+  build(r[0].data.filter(function(x){return x.id!==me&&x.class_code===CLASS}),r[1].data||[],r[2].data||[]);LOADED=Date.now();REFRESH_ERR=false;LOADING=false;render()}).catch(function(e){LOADING=false;if(silent&&LOADED){REFRESH_ERR=true;updNote();return}card('<h2>Could not load your class</h2><p class="muted">'+esc(e&&e.message||e)+'</p><button class="pri" id="rt">Try again</button>');$('#rt').onclick=function(){load()}})}
+function updNote(){var n=$('#upd');if(!n)return;n.textContent=REFRESH_ERR?"Couldn't refresh. Trying again soon.":'Updated '+ago(Date.now()-LOADED);n.classList.toggle('bad',REFRESH_ERR)}
+setInterval(function(){if(LOADED&&document.visibilityState==='visible')load(true)},REFRESH_MS);
+setInterval(updNote,10000);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&LOADED&&Date.now()-LOADED>REFRESH_MS)load(true)});
 var TESTS=M.tests.filter(function(t){return t.kind==='topic'||t.kind==='exam'});
 function build(profiles,progress,attempts){
- var by={};profiles.forEach(function(p){by[p.id]={id:p.id,name:p.display_name||'(no name)',joined:p.created_at,last:p.created_at,quest:null,lab:null,fin:[]}});
- progress.forEach(function(g){var s=by[g.user_id];if(!s)return;if(g.app==='quest')s.quest=g;else if(g.app==='practice')s.lab=g;if(g.updated_at>s.last)s.last=g.updated_at});
- attempts.forEach(function(a){var s=by[a.user_id];if(!s)return;if(a.taken_at>s.last)s.last=a.taken_at;if(a.test_id==='final')s.fin.push(a)});
+ var by={};profiles.forEach(function(p){by[p.id]={id:p.id,name:p.display_name||'(no name)',joined:p.created_at,last:p.created_at,seen:null,now:null,quest:null,lab:null,fin:[]}});
+ progress.forEach(function(g){var s=by[g.user_id];if(!s)return;if(g.app==='quest')s.quest=g;else if(g.app==='practice')s.lab=g;if(g.updated_at>s.last)s.last=g.updated_at;if(!s.seen||g.updated_at>s.seen)s.seen=g.updated_at;var nw=g.data&&g.data.now;if(nw&&nw.where&&(!s.now||String(nw.at)>String(s.now.at)))s.now=nw});
+ attempts.forEach(function(a){var s=by[a.user_id];if(!s)return;if(a.taken_at>s.last)s.last=a.taken_at;if(!s.seen||a.taken_at>s.seen)s.seen=a.taken_at;if(a.test_id==='final')s.fin.push(a)});
  var cls={};
  ROWS=Object.keys(by).map(function(id){var s=by[id],qd=(s.quest&&s.quest.data)||{},best=(s.lab&&s.lab.best_scores)||{};
   var xp=s.quest?(+s.quest.xp||0):0,quiz=qd.quiz||{};
@@ -72,13 +87,15 @@ function build(profiles,progress,attempts){
   var tt=TESTS.map(function(t){return best[t.id+':test']});var done=tt.filter(function(v){return v!=null});
   var fs=s.fin.map(function(a){return a.total?100*a.score/a.total:0});
   var dom={};s.fin.forEach(function(a){Object.keys(a.by_domain||{}).forEach(function(k){var v=a.by_domain[k];var d=dom[k]=dom[k]||{c:0,n:0};d.c+=+v.c||0;d.n+=+v.n||0;var cd=cls[k]=cls[k]||{c:0,n:0};cd.c+=+v.c||0;cd.n+=+v.n||0})});
-  return {id:id,name:s.name,last:s.last,xp:xp,rank:rankOf(xp),badges:(qd.badges||[]).length,badgeList:qd.badges||[],levels:lv,boss:s.quest?(+qd.boss||0):null,quiz:quiz,
+  var on=s.now?(s.now.app==='quest'?'Quest':'Practice Lab')+': '+s.now.where:'';
+  return {id:id,name:s.name,last:s.last,seen:s.seen,on:on,xp:xp,rank:rankOf(xp),badges:(qd.badges||[]).length,badgeList:qd.badges||[],levels:lv,boss:s.quest?(+qd.boss||0):null,quiz:quiz,
    passed:done.filter(function(v){return v>=80}).length,labAvg:avg(done),tests:best,finN:s.fin.length,finBest:fs.length?Math.max.apply(null,fs):null,finAvg:avg(fs),finLast:fs.length?fs[fs.length-1]:null,dom:dom,started:!!(s.quest||s.lab)}});
  DOMAVG=cls}
-var COLS=[['name','Student'],['last','Last active'],['xp','Quest XP'],['rank','Rank'],['levels','Levels passed'],['badges','Badges'],['boss','Boss best'],['passed','Tests 80%+'],['labAvg','Avg best test'],['finN','Final tries'],['finBest','Final best'],['finAvg','Final avg']];
-function cell(r,k){switch(k){case 'name':return '<b>'+esc(r.name)+'</b>'+(r.started?'':' <span class="na small">not started</span>');case 'last':return esc(when(r.last));case 'xp':return r.xp;case 'rank':return esc(r.rank);
+var COLS=[['name','Student'],['status','Status'],['on','Currently on'],['xp','Quest XP'],['rank','Rank'],['levels','Levels passed'],['badges','Badges'],['boss','Boss best'],['passed','Tests 80%+'],['labAvg','Avg best test'],['finN','Final tries'],['finBest','Final best'],['finAvg','Final avg']];
+function cell(r,k){switch(k){case 'name':return '<span class="dot'+(isActive(r)?' on':'')+'" aria-hidden="true"></span><b>'+esc(r.name)+'</b>'+(r.started?'':' <span class="na small">not started</span>');case 'last':return esc(when(r.last));
+ case 'status':return '<span class="st'+(isActive(r)?' on':'')+'">'+esc(statusText(r))+'</span>';case 'on':return r.on?'<span class="on-txt">'+esc(r.on)+'</span>':'<span class="na">–</span>';case 'xp':return r.xp;case 'rank':return esc(r.rank);
  case 'levels':return r.levels+' / '+M.levels.length;case 'badges':return r.badges+' / '+M.badges.length;case 'boss':return pct(r.boss);case 'passed':return r.passed+' / '+TESTS.length;case 'labAvg':return pct(r.labAvg);case 'finN':return r.finN;case 'finBest':return pct(r.finBest);case 'finAvg':return pct(r.finAvg)}}
-function sorted(){var k=SORT.k,d=SORT.d;return ROWS.slice().sort(function(a,b){var x=a[k],y=b[k];if(x==null)x=-1;if(y==null)y=-1;if(typeof x==='string'||typeof y==='string'){return d*String(x).localeCompare(String(y))}return d*(x-y)})}
+function sorted(){var k=SORT.k,d=SORT.d;return ROWS.slice().sort(function(a,b){if(k==='status'){var p=age(a),q=age(b);p=p==null?1e15:p;q=q==null?1e15:q;return d*(p-q)||a.name.localeCompare(b.name)}var x=a[k],y=b[k];if(x==null)x=-1;if(y==null)y=-1;if(typeof x==='string'||typeof y==='string'){return d*String(x).localeCompare(String(y))}return d*(x-y)})}
 function detail(r){
  var tests=TESTS.map(function(t){var v=r.tests[t.id+':test'],n=r.tests[t.id+':train'];return '<tr><td>'+esc(t.name)+' <span class="na small">'+esc(t.short)+'</span></td><td>'+pct(v)+'</td><td>'+pct(n)+'</td></tr>'}).join('');
  var doms=Object.keys(M.domains).map(function(k){var d=r.dom[k];return '<tr><td>'+esc(k+'. '+M.domains[k])+'</td><td>'+(d&&d.n?pct(100*d.c/d.n)+' <span class="na small">('+d.c+'/'+d.n+')</span>':pct(null))+'</td></tr>'}).join('');
@@ -86,24 +103,26 @@ function detail(r){
  var bd=M.badges.filter(function(b){return r.badgeList.indexOf(b.id)>=0}).map(function(b){return '<span>'+esc(b.icon+' '+b.name)+'</span>'}).join('')||'<span class="na">None yet</span>';
  return '<tr class="det"><td colspan="'+COLS.length+'"><div class="dgrid"><div><h4>Quest level quizzes (best)</h4><table>'+lv+'</table><h4 style="margin-top:.8rem">Badges</h4><div class="chips">'+bd+'</div></div><div><h4>Final Exam Review by domain</h4><table>'+doms+'</table></div><div><h4>Practice Lab best scores</h4><table><tr><th>Test</th><th>Testing</th><th>Training</th></tr>'+tests+'</table></div></div></td></tr>'}
 function render(){
+ var tw=$('.tw'),sx=tw?tw.scrollLeft:0,now=ROWS.filter(isActive).length;
  var n=ROWS.length,act=ROWS.filter(function(r){return r.last&&(Date.now()-new Date(r.last))<7*864e5&&r.started}).length;
  var fa=avg(ROWS.filter(function(r){return r.finAvg!=null}).map(function(r){return r.finAvg}));
  var ready=ROWS.filter(function(r){return r.finBest!=null&&r.finBest>=80}).length;
  var dm=Object.keys(M.domains).map(function(k){var d=DOMAVG[k],v=d&&d.n?100*d.c/d.n:null;return '<div class="row small" style="margin:.3rem 0"><span style="flex:0 0 min(55%,320px)">'+esc(k+'. '+M.domains[k])+'</span><div class="bar" style="flex:1"><i style="width:'+(v||0)+'%"></i></div><span style="width:3.5em;text-align:right">'+pct(v)+'</span></div>'}).join('');
- app.innerHTML='<div class="card"><div class="row"><h2 style="margin:0;flex:1">Class '+esc(CLASS)+'</h2><button id="rf">Refresh</button><button class="pri" id="csv">Download CSV</button></div>'+
- '<div class="stats" style="margin-top:.8rem"><div class="stat"><b>'+n+'</b>students signed up</div><div class="stat"><b>'+act+'</b>active this week</div><div class="stat"><b>'+(fa==null?'–':Math.round(fa)+'%')+'</b>class Final Exam Review avg</div><div class="stat"><b>'+ready+'</b>scored 80%+ on the Final</div></div>'+
+ app.innerHTML='<div class="card"><div class="row"><h2 style="margin:0;flex:1">Class '+esc(CLASS)+'</h2><span id="upd" class="small muted" role="status" aria-live="polite"></span><button id="rf">Refresh</button><button class="pri" id="csv">Download CSV</button></div>'+
+ '<div class="stats" style="margin-top:.8rem"><div class="stat now"><b>'+now+'</b>active right now</div><div class="stat"><b>'+n+'</b>students signed up</div><div class="stat"><b>'+act+'</b>active this week</div><div class="stat"><b>'+(fa==null?'–':Math.round(fa)+'%')+'</b>class Final Exam Review avg</div><div class="stat"><b>'+ready+'</b>scored 80%+ on the Final</div></div>'+
  (n?'':'<p class="muted" style="margin-top:1rem">No students yet. Students tap <b>☁️ Sign in</b> in either app, choose <b>New account</b>, and type class code <b>'+esc(CLASS)+'</b>.</p>')+'</div>'+
- (n?'<div class="card"><h2>Students</h2><p class="muted small">Tap a column to sort. Tap a student for details.</p><div class="tw"><table id="tb"><thead><tr>'+COLS.map(function(c){return '<th data-k="'+c[0]+'" scope="col" tabindex="0"'+(SORT.k===c[0]?' aria-sort="'+(SORT.d>0?'ascending':'descending')+'"':'')+'>'+c[1]+'</th>'}).join('')+'</tr></thead><tbody>'+
+ (n?'<div class="card" id="rightnow"><h2>🟢 Right now</h2>'+(now?'<ul class="rn">'+ROWS.filter(isActive).sort(function(a,b){return age(a)-age(b)}).map(function(r){return '<li><b>'+esc(r.name)+'</b><span>'+(r.on?esc(r.on):'<span class="na">Signed in</span>')+'</span></li>'}).join('')+'</ul>':'<p class="muted small" style="margin:0">No one is active right now. Students show up here while they have an app open.</p>')+'</div>':'')+
+ (n?'<div class="card"><h2>Students</h2><p class="muted small">Active students are listed first. The table refreshes by itself every 30 seconds. Tap a column to sort, or a student for details.</p><div class="tw"><table id="tb"><thead><tr>'+COLS.map(function(c){return '<th data-k="'+c[0]+'" scope="col" tabindex="0"'+(SORT.k===c[0]?' aria-sort="'+(SORT.d>0?'ascending':'descending')+'"':'')+'>'+c[1]+'</th>'}).join('')+'</tr></thead><tbody>'+
  sorted().map(function(r){return '<tr data-id="'+esc(r.id)+'" tabindex="0">'+COLS.map(function(c){return '<td>'+cell(r,c[0])+'</td>'}).join('')+'</tr>'+(OPEN[r.id]?detail(r):'')}).join('')+'</tbody></table></div></div>'+
  '<div class="card"><h2>Final Exam Review: class average by domain</h2><p class="muted small">All Final Exam Review attempts from students in this class.</p>'+dm+'</div>':'');
- $('#rf').onclick=load;$('#csv').onclick=csv;
- document.querySelectorAll('th[data-k]').forEach(function(th){var f=function(){var k=th.dataset.k;SORT=SORT.k===k?{k:k,d:-SORT.d}:{k:k,d:(k==='name'||k==='rank')?1:-1};render()};th.onclick=f;th.onkeydown=function(e){if(e.key==='Enter')f()}});
+ $('#rf').onclick=function(){load(true)};$('#csv').onclick=csv;updNote();if(sx&&$('.tw'))$('.tw').scrollLeft=sx;
+ document.querySelectorAll('th[data-k]').forEach(function(th){var f=function(){var k=th.dataset.k;SORT=SORT.k===k?{k:k,d:-SORT.d}:{k:k,d:(k==='name'||k==='rank'||k==='status'||k==='on')?1:-1};render()};th.onclick=f;th.onkeydown=function(e){if(e.key==='Enter')f()}});
  document.querySelectorAll('tbody tr[data-id]').forEach(function(tr){var f=function(){OPEN[tr.dataset.id]=!OPEN[tr.dataset.id];render()};tr.onclick=f;tr.onkeydown=function(e){if(e.key==='Enter')f()}})}
 function csv(){
  function q(v){v=v==null?'':String(v);if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}
  function r0(v){return v==null?'':Math.round(v)}
- var head=['Student','Last active','Quest XP','Rank','Levels passed','Badges','Boss best %','Tests 80%+','Avg best test %','Final tries','Final best %','Final avg %'].concat(Object.keys(M.domains).map(function(k){return 'Final D'+k+' '+M.domains[k]+' %'})).concat(TESTS.map(function(t){return t.name+' ('+t.program+') best Testing %'}));
- var lines=[head.map(q).join(',')].concat(sorted().map(function(r){return [r.name,r.last?new Date(r.last).toISOString().slice(0,10):'',r.xp,r.rank,r.levels,r.badges,r0(r.boss),r.passed,r0(r.labAvg),r.finN,r0(r.finBest),r0(r.finAvg)]
+ var head=['Student','Status','Currently on','Last seen','Last active','Quest XP','Rank','Levels passed','Badges','Boss best %','Tests 80%+','Avg best test %','Final tries','Final best %','Final avg %'].concat(Object.keys(M.domains).map(function(k){return 'Final D'+k+' '+M.domains[k]+' %'})).concat(TESTS.map(function(t){return t.name+' ('+t.program+') best Testing %'}));
+ var lines=[head.map(q).join(',')].concat(sorted().map(function(r){return [r.name,statusText(r),r.on,r.seen?new Date(r.seen).toISOString():'',r.last?new Date(r.last).toISOString().slice(0,10):'',r.xp,r.rank,r.levels,r.badges,r0(r.boss),r.passed,r0(r.labAvg),r.finN,r0(r.finBest),r0(r.finAvg)]
   .concat(Object.keys(M.domains).map(function(k){var d=r.dom[k];return d&&d.n?Math.round(100*d.c/d.n):''})).concat(TESTS.map(function(t){return r0(r.tests[t.id+':test'])})).map(q).join(',')}));
  var blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='class_'+CLASS+'_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
 JCSync.ready().then(route);

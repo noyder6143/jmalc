@@ -23,6 +23,8 @@ def watch(page, errs, ext):
 async def part1(b):
     print('--- Part 1: no config (device-only mode)')
     ctx = await b.new_context(viewport={'width': 1280, 'height': 860})
+    # The repo's config.js now holds the real project. Serve the empty one the site shipped with.
+    await ctx.route('**/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body='window.JC_CONFIG={SUPABASE_URL:"",SUPABASE_ANON_KEY:""};'))
     errs, ext = [], []
     p = await ctx.new_page(); watch(p, errs, ext)
     await p.goto(BASE); await p.wait_for_load_state('networkidle')
@@ -177,7 +179,7 @@ async def part2(b):
     async with t.expect_download() as dl: await t.click('#csv')
     d = await dl.value; path = await d.path(); csv = open(path, encoding='utf-8-sig', newline='').read()
     lines = csv.strip().split('\r\n')
-    check(len(lines) == 3 and lines[0].startswith('"Student","Last active","Quest XP"') and 'Final D1' in lines[0], f'CSV export has header + 2 students ({d.suggested_filename})')
+    check(len(lines) == 3 and lines[0].startswith('"Student","Status","Currently on","Last seen","Last active","Quest XP"') and 'Final D1' in lines[0], f'CSV export has header + 2 students ({d.suggested_filename})')
     mt = await T.new_page(); await mt.set_viewport_size({'width': 390, 'height': 800}); await mt.goto(BASE + 'teacher.html'); await mt.wait_for_selector('#tb'); await mt.screenshot(path=SHOTS + 'p2_teacher_mobile.png', full_page=True); await mt.close()
 
     # Supabase down: app keeps working locally
@@ -228,4 +230,5 @@ async def main():
     finally: srv.terminate()
     f = [m for ok, m in results if not ok]
     print(f'\n{len(results) - len(f)}/{len(results)} checks passed'); sys.exit(1 if f else 0)
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.run(main())

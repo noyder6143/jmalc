@@ -94,7 +94,8 @@
     merge: MERGE, summary: summary, attemptRows: attemptRows, keys: KEYS,
     enabled: false, attach: function () {}, changed: function () {}, ready: function () { return Promise.resolve(null); },
     user: function () { return null; }, profile: function () { return null; }, onAuth: function () {},
-    signIn: nope, signUp: nope, signOut: nope, syncNow: function () { return Promise.resolve(false); }, open: function () {}
+    signIn: nope, signUp: nope, signOut: nope, syncNow: function () { return Promise.resolve(false); }, open: function () {},
+    here: function () {}, now: function () { return null; }
   };
   function nope() { return Promise.resolve({ error: "Cloud accounts are not set up yet." }); }
   window.JCSync = API;
@@ -153,7 +154,7 @@
     if (syncP) return syncP;
     var uid = user.id;
     return syncP = (prof ? Promise.resolve() : loadProfile()).then(function () { emit(); return pullAll(); })
-      .then(function () { if (user && user.id === uid) { pulled = true; setState("ok"); } }, function () { setState("error"); }).then(function () { syncP = null; emit(); });
+      .then(function () { if (user && user.id === uid) { pulled = true; setState("ok"); beat(); } }, function () { setState("error"); }).then(function () { syncP = null; emit(); });
   }
   function loadProfile() {
     return sb.from("profiles").select("id,display_name,class_code,role").eq("id", user.id).maybeSingle().then(function (r) {
@@ -170,6 +171,7 @@
       var cloud = {}; (r.data || []).forEach(function (x) { cloud[x.app] = x.data; });
       var jobs = Object.keys(KEYS).map(function (app) {
         var local = readLocal(app), c = cloud[app] || null;
+        if (c && typeof c === "object" && "now" in c) { c = Object.assign({}, c); delete c.now; } // "now" is session info, never stored on the device
         if (!local && !c) return Promise.resolve();
         var merged = MERGE[app](local, c);
         if (app === "quest" && !merged.name && prof && prof.display_name) merged.name = prof.display_name.split(" ")[0].slice(0, 30);
@@ -186,6 +188,7 @@
     if (!pulled && !force) return startSync().then(function () { return pulled; });
     var st = readLocal(app); if (!st) return Promise.resolve(true);
     var s = summary(app, st), uid = user.id;
+    if (NOW[app]) st = Object.assign({}, st, { now: NOW[app] });
     dirty(app, true);
     return sb.from("progress").upsert({ user_id: uid, app: app, data: st, xp: s.xp, best_scores: s.best }, { onConflict: "user_id,app" })
       .then(function (r) { if (r.error) throw r.error; return app === "practice" ? pushAttempts(st) : null; })
@@ -210,7 +213,20 @@
   }
   function flush() { if (!user) return Promise.resolve(true); if (!pulled) return startSync().then(function () { return pulled && flush(); }); return Promise.all(Object.keys(KEYS).filter(function (a) { return dirty(a); }).map(push)).then(function (r) { return r.every(Boolean); }); }
   addEventListener("online", function () { if (!sb) { readyP = null; boot(); } else flush(); });
-  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") flush(); });
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") flush(); else beat(); });
+
+  /* ---------------- "currently on" + heartbeat (only while signed in) ---------------- */
+  var NOW = {}, HEARTBEAT = (window.JC_HEARTBEAT_MS || 60000);
+  function here(app, where) {
+    if (!KEYS[app]) return;
+    NOW[app] = { app: app, where: String(where || "").replace(/\s+/g, " ").trim().slice(0, 160), at: new Date().toISOString() };
+    if (user && pulled) changed(app);
+  }
+  function beat() {
+    if (!user || !pulled || document.visibilityState !== "visible") return;
+    Object.keys(NOW).forEach(function (app) { NOW[app].at = new Date().toISOString(); changed(app); });
+  }
+  setInterval(beat, HEARTBEAT);
 
   function cleanCode(c) { return String(c || "").replace(/\s+/g, "").toUpperCase().slice(0, 20); }
   function friendly(e) {
@@ -361,6 +377,8 @@
     boot();
   };
   API.changed = changed;
+  API.here = here;
+  API.now = function (app) { return NOW[app] || null; };
   API.ready = boot;
   API.user = function () { return user; };
   API.profile = function () { return prof; };
