@@ -31,8 +31,16 @@ td .on-txt{display:inline-block;white-space:normal;min-width:170px;max-width:260
 .rn{list-style:none;margin:0;padding:0}.rn li{display:flex;gap:.3rem 1rem;flex-wrap:wrap;padding:.45rem 0;border-bottom:1px solid #e9eef3}.rn li:last-child{border-bottom:0}.rn li b{min-width:9em}.rn li b::before{content:'';display:inline-block;width:.6em;height:.6em;border-radius:50%;background:#1c9a50;margin-right:.45em}#upd{margin-left:auto}#upd.bad{color:#8a1626}
 .chips span{display:inline-block;background:#eef2f7;border-radius:999px;padding:.1em .55em;margin:.15em;font-size:.82rem}
 @media(max-width:600px){#upd{flex-basis:100%;order:3;margin-left:0}td .on-txt{min-width:140px;max-width:180px}header h1{font-size:1.05rem}main{padding:0 .6rem}.card{padding:.9rem}th,td{padding:.45rem .45rem;font-size:.82rem}}
+.tabs[hidden],#keyv[hidden],#app[hidden]{display:none}.tabs{max-width:1200px;margin:1rem auto 0;padding:0 1rem;display:flex;gap:.5rem}.tabs button[aria-selected=true]{background:#1d3557;border-color:#1d3557;color:#fff}
+.kf{display:flex;flex-wrap:wrap;gap:.6rem;align-items:end}.kf>div{flex:1 1 180px}.kf input,.kf select{max-width:none}
+.ki{border-top:1px solid #e9eef3;padding:.7rem 0;break-inside:avoid}.ki .m{font-size:.78rem;color:#5a6a7d}.ki .q{font-weight:600;margin:.2rem 0}
+.ki ol{margin:.2rem 0 .2rem 1.3rem;padding:0;font-size:.9rem}.ki li.ok{font-weight:700;color:#11643a}.ki .a{background:#e3f5ea;border-radius:8px;padding:.35rem .6rem;font-size:.9rem;margin:.25rem 0}.ki .a div::before{content:"\2713  ";color:#11643a}
+.ki .w{font-size:.86rem;color:#334}.tagx{display:inline-block;border-radius:999px;padding:0 .5em;font-weight:700;font-size:.72rem;margin-right:.3em}.tagx.quest{background:#e8e4ff;color:#3b2a8a}.tagx.lab{background:#d9f0f1;color:#0b5c61}
+@media print{header,.tabs,.kf,#kp,.noprint{display:none!important}body{background:#fff}.card{box-shadow:none;padding:0}main{margin:0;max-width:none}body.keymode #app{display:none!important}body:not(.keymode) #keyv{display:none!important}.ki{font-size:10pt}}
 </style></head><body>
 <header><div><h1>📊 Teacher Dashboard</h1><small>Jmal C's Digital Literacy Class</small></div><span class="sp"></span><span id="who" class="small"></span><a href="./" class="small">Class page</a></header>
+<nav class="tabs" id="tabs" hidden role="tablist"><button role="tab" id="t1" aria-selected="true">Class</button><button role="tab" id="t2" aria-selected="false">🔑 Answer Key</button></nav>
+<main id="keyv" hidden></main>
 <main id="app"><div class="card"><p class="muted">Loading...</p></div></main>
 <script>
 (function(){"use strict";
@@ -62,6 +70,7 @@ function route(){
  if(!u)return signInView();
  $('#who').innerHTML=esc((p&&p.display_name)||u.email)+' · <button id="so" style="padding:.2em .6em;font-size:.8rem">Sign out</button>';$('#so').onclick=function(){JCSync.signOut()};
  if(!p||p.role!=='teacher'){card('<h2>This is not a teacher account yet</h2><p>You are signed in as <b>'+esc(u.email)+'</b>. To see your class, run the "make me a teacher" line from <b>SETUP.md</b> (step 9) in the Supabase SQL editor, then reload this page.</p><button class="pri" onclick="location.reload()">Reload</button>');return}
+ tabs();
  if(!p.class_code){card('<h2>Your account has no class code</h2><p>Add one in the Supabase Table Editor (profiles table, class_code column), using the same code your students type when they sign up.</p>');return}
  CLASS=p.class_code;load()}
 function load(silent){
@@ -125,6 +134,21 @@ function csv(){
  var lines=[head.map(q).join(',')].concat(sorted().map(function(r){return [r.name,statusText(r),r.on,r.seen?new Date(r.seen).toISOString():'',r.last?new Date(r.last).toISOString().slice(0,10):'',r.xp,r.rank,r.levels,r.badges,r0(r.boss),r.passed,r0(r.labAvg),r.finN,r0(r.finBest),r0(r.finAvg)]
   .concat(Object.keys(M.domains).map(function(k){var d=r.dom[k];return d&&d.n?Math.round(100*d.c/d.n):''})).concat(TESTS.map(function(t){return r0(r.tests[t.id+':test'])})).map(q).join(',')}));
  var blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='class_'+CLASS+'_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
+var KEYF={q:'',app:'',dom:''};
+function tabs(){var t=$('#tabs');t.hidden=false;$('#t1').onclick=function(){show(0)};$('#t2').onclick=function(){show(1)}}
+function show(k){$('#t1').setAttribute('aria-selected',!k);$('#t2').setAttribute('aria-selected',!!k);app.hidden=!!k;$('#keyv').hidden=!k;document.body.classList.toggle('keymode',!!k);if(k)keyView()}
+function keyView(){var v=$('#keyv');if(window.JC_KEY)return keyRender();if(v.dataset.l)return;v.dataset.l=1;v.innerHTML='<div class="card"><p class="muted">Loading answer key...</p></div>';
+ var sc=document.createElement('script');sc.src='answerkey.js';sc.onload=keyRender;sc.onerror=function(){v.dataset.l='';v.innerHTML='<div class="card"><p>Could not load the answer key. Check your connection and try again.</p></div>'};document.head.appendChild(sc)}
+function keyRender(){var v=$('#keyv'),K=window.JC_KEY,nq=K.filter(function(x){return x.app==='quest'}).length,nl=K.length-nq,nf=K.filter(function(x){return x.fin}).length;
+ if(!$('#kl')){v.innerHTML='<div class="card"><h2>🔑 Master Answer Key</h2><p class="muted small">Every question in both apps with the correct answer: <b>'+nq+'</b> Quest items and <b>'+nl+'</b> Practice Lab items (<b>'+K.length+'</b> total). The Final Exam Review draws 45 questions at random from the <b>'+nf+'</b> Practice Lab items marked "Final Exam Review pool". Only teacher accounts see this tab.</p>'+
+ '<div class="kf"><div><label for="kq">Search</label><input id="kq" type="search" placeholder="Word, objective (like 3.6.1), or item ID"></div><div><label for="ka">App</label><select id="ka"><option value="">Both apps</option><option value="quest">Quest</option><option value="lab">Practice Lab</option><option value="fin">Final Exam Review pool</option></select></div><div><label for="kd">Domain</label><select id="kd"><option value="">All domains</option>'+Object.keys(M.domains).map(function(k){return '<option value="'+k+'">'+k+'. '+esc(M.domains[k])+'</option>'}).join('')+'</select></div><div style="flex:0 0 auto"><button class="pri" id="kpr">Print</button></div></div><p id="kp" class="small muted" role="status" aria-live="polite"></p><div id="kl"></div></div>';
+  $('#kq').oninput=function(){KEYF.q=this.value;keyList()};$('#ka').onchange=function(){KEYF.app=this.value;keyList()};$('#kd').onchange=function(){KEYF.dom=this.value;keyList()};$('#kpr').onclick=function(){window.print()}}
+ keyList()}
+function keyList(){var K=window.JC_KEY,q=KEYF.q.trim().toLowerCase(),out=K.filter(function(x){if(KEYF.app==='fin'?!x.fin:KEYF.app&&x.app!==KEYF.app)return false;if(KEYF.dom&&x.dom!==KEYF.dom)return false;if(q)return [x.q,x.id,x.why,x.od.join(' '),x.a.join(' '),x.opts.join(' '),x.where.join(' ')].join(' ').toLowerCase().indexOf(q)>=0;return true});
+ $('#kp').textContent='Showing '+out.length+' of '+K.length+' items';
+ $('#kl').innerHTML=out.map(function(x,i){var good=x.a.join('|');return '<div class="ki"><div class="m">'+(i+1)+'. <span class="tagx '+x.app+'">'+(x.app==='quest'?'Quest':'Practice Lab')+'</span>Domain '+esc(x.dom)+': '+esc(M.domains[x.dom]||'')+' · Objective '+esc(x.od.join(', ')||'n/a')+' · '+esc(x.kind)+' · '+esc(x.id)+'</div><div class="q">'+esc(x.q)+'</div>'+
+  (x.opts.length?'<ol type="A">'+x.opts.map(function(o,j){var ok=x.a.some(function(a){return a==='ABCDEFGH'[j]+'. '+o});return '<li'+(ok?' class="ok"':'')+'>'+esc(o)+(ok?' ✓':'')+'</li>'}).join('')+'</ol>':'')+
+  '<div class="a">'+x.a.map(function(a){return '<div>'+esc(a)+'</div>'}).join('')+'</div>'+(x.why?'<div class="w"><b>Why:</b> '+esc(x.why)+'</div>':'')+'<div class="m">In: '+esc(x.where.join(', '))+'</div></div>'}).join('')}
 JCSync.ready().then(route);
 window.__teacher={rows:function(){return ROWS}};
 })();

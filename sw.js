@@ -1,5 +1,5 @@
-const CACHE='ic3-apps-v7';
-const FILES=['./','./index.html','./quest.html','./practice.html','./site.webmanifest','./quest.webmanifest','./practice.webmanifest','./config.js','./sync.js','./meta.js','./teacher.html',
+const CACHE='ic3-apps-v8';
+const FILES=['./','./index.html','./quest.html','./practice.html','./site.webmanifest','./quest.webmanifest','./practice.webmanifest','./config.js','./sync.js','./meta.js','./teacher.html','./answerkey.js',
 './icons/home-192.png','./icons/home-512.png','./icons/home-180.png','./icons/quest-192.png','./icons/quest-512.png','./icons/quest-180.png',
 './icons/practice-192.png','./icons/practice-512.png','./icons/practice-180.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
