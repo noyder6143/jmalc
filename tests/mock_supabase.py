@@ -12,6 +12,7 @@ class MockSupabase:
         self.tokens = {}     # token -> uid
         self.profiles, self.progress, self.attempts = {}, {}, []
         self.down = False
+        self.max_rows = 1000  # like Supabase's API max rows setting
         self.log = []
     # ---- helpers
     def token_for(self, uid):
@@ -77,6 +78,8 @@ class MockSupabase:
                 col = q['order'][0].split('.')[0]; rows = sorted(rows, key=lambda r: r[col])
             if 'select' in q and q['select'][0] != '*':
                 cols = q['select'][0].split(','); rows = [{c: r.get(c) for c in cols} for r in rows]
+            off = int(q.get('offset', ['0'])[0]); lim = int(q.get('limit', [str(self.max_rows)])[0])
+            rows = rows[off:off + min(lim, self.max_rows)]
             if 'vnd.pgrst.object' in request.headers.get('accept', ''):
                 if len(rows) != 1: return out(406, {'code': 'PGRST116', 'message': 'JSON object requested, multiple (or no) rows returned'})
                 return out(200, rows[0])

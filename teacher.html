@@ -73,11 +73,13 @@ function route(){
  tabs();
  if(!p.class_code){card('<h2>Your account has no class code</h2><p>Add one in the Supabase Table Editor (profiles table, class_code column), using the same code your students type when they sign up.</p>');return}
  CLASS=p.class_code;load()}
+// Supabase returns at most 1000 rows per request, so read every table page by page until a page comes back empty.
+function every(mk){var out=[],P=1000;function step(i){if(i>=100*P)return Promise.resolve({data:out,error:null});return mk().range(i,i+P-1).then(function(r){if(r.error)return r;var d=r.data||[];if(!d.length)return {data:out,error:null};out=out.concat(d);return step(i+d.length)})}return step(0)}
 function load(silent){
  if(LOADING)return;LOADING=true;
  if(!silent||!LOADED)card('<p class="muted">Loading class '+esc(CLASS)+'...</p>');
  var c=JCSync.client(),me=JCSync.user().id;
- Promise.all([c.from('profiles').select('id,display_name,class_code,role,created_at'),c.from('progress').select('user_id,app,xp,best_scores,data,updated_at'),c.from('attempts').select('user_id,test_id,mode,score,total,by_domain,taken_at').order('taken_at',{ascending:true})]).then(function(r){
+ Promise.all([every(function(){return c.from('profiles').select('id,display_name,class_code,role,created_at').order('id')}),every(function(){return c.from('progress').select('user_id,app,xp,best_scores,data,updated_at').order('user_id').order('app')}),every(function(){return c.from('attempts').select('id,user_id,test_id,mode,score,total,by_domain,taken_at').order('taken_at',{ascending:true}).order('id')})]).then(function(r){
   for(var i=0;i<3;i++)if(r[i].error)throw r[i].error;
   build(r[0].data.filter(function(x){return x.id!==me&&x.class_code===CLASS}),r[1].data||[],r[2].data||[]);LOADED=Date.now();REFRESH_ERR=false;LOADING=false;render()}).catch(function(e){LOADING=false;if(silent&&LOADED){REFRESH_ERR=true;updNote();return}card('<h2>Could not load your class</h2><p class="muted">'+esc(e&&e.message||e)+'</p><button class="pri" id="rt">Try again</button>');$('#rt').onclick=function(){load()}})}
 function updNote(){var n=$('#upd');if(!n)return;n.textContent=REFRESH_ERR?"Couldn't refresh. Trying again soon.":'Updated '+ago(Date.now()-LOADED);n.classList.toggle('bad',REFRESH_ERR)}
