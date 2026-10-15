@@ -70,7 +70,7 @@ const BADGES=[].concat(D.levels.map(L=>({id:'lvl_'+L.id,icon:L.icon,name:L.name+
  {id:'sim',icon:'🖱️',name:'Sim Pro',how:'Finish 15 sims'},{id:'cards',icon:'🃏',name:'Card Shark',how:'Flip 40 flashcards'},
  {id:'mission',icon:'🎯',name:'Mission Starter',how:'Check off your first GMetrix mission step'},{id:'streak',icon:'🔥',name:'3-Day Streak',how:'Study 3 days in a row'}]);
 let S=load();
-function blank(){return {name:'',xp:0,seen:{},quiz:{},qok:{},games:{},sims:{},mission:{},badges:[],flips:0,days:[],boss:0}}
+function blank(){return {name:'',xp:0,seen:{},quiz:{},qok:{},games:{},sims:{},mission:{},badges:[],flips:0,days:[],boss:0,sread:[]}}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object')return Object.assign(blank(),s)}catch(e){}return blank()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.JCSync)JCSync.changed('quest')}
 function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -128,7 +128,7 @@ function chapterView(sel){sel=+sel||0;const CH=D.chapters||[];here(sel?'Chapters
   <div class="muted" style="font-size:.9rem"><b>Key topics:</b> ${esc(c.topics.join(' · '))}</div>
   ${sel?Object.keys(byL).map(lv=>{const L=D.levels.find(x=>x.id===lv);const seen=S.seen[lv]||[];return `<h4 style="margin:.8rem 0 .3rem">${L.icon} Level ${L.n}: ${esc(L.name)}</h4><div class="row" style="flex-wrap:wrap;gap:.35rem">${byL[lv].map(x=>`<button data-lv="${lv}" data-i="${x.i}">${seen.includes(x.i)?'✅ ':''}${esc(x.t)}</button>`).join('')}</div>`}).join(''):
    `<div class="muted" style="font-size:.85rem;margin-top:.4rem">${c.lessons.length} Quest lessons · ${c.quiz} Quest quiz questions match this chapter.</div>`}
-  <div class="row" style="margin-top:.8rem"><a class="chsum" href="chapters.html#ch=${c.n}" style="background:var(--acc);color:#1a1a1a;font-weight:700;padding:.5em .9em;border-radius:12px;text-decoration:none">📖 Read: Chapter ${c.n} Summary</a>${sel?'':`<button class="primary" data-c2="${c.n}">Open Chapter ${c.n} lessons</button>`}<a href="practice.html#chapter=${c.n}" style="color:var(--acc);font-weight:700">📝 Chapter ${c.n} Quiz in the Practice Lab →</a></div></div>`}).join('');
+  <div class="row" style="margin-top:.8rem"><a class="chsum" href="chapters.html#ch=${c.n}" style="background:var(--acc);color:#1a1a1a;font-weight:700;padding:.5em .9em;border-radius:12px;text-decoration:none">📖 Read: Chapter ${c.n} Summary${(S.sread||[]).includes(c.n)?' ✅':''}</a>${sel?'':`<button class="primary" data-c2="${c.n}">Open Chapter ${c.n} lessons</button>`}<a href="practice.html#chapter=${c.n}" style="color:var(--acc);font-weight:700">📝 Chapter ${c.n} Quiz in the Practice Lab →</a></div></div>`}).join('');
  app.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>go('level',{id:b.dataset.lv,tab:'learn',i:+b.dataset.i}));
  app.querySelectorAll('[data-c2]').forEach(b=>b.onclick=()=>chapterView(+b.dataset.c2))}
 function lvlName(L){return 'Level '+L.n+': '+L.name}
@@ -225,6 +225,7 @@ function fromHash(){const m=/ch=(\d)/.exec(location.hash||'');if(m&&(D.chapters|
 hdr();if(!fromHash())go('map');addEventListener('hashchange',fromHash);
 window.__quest={state:()=>S,data:D,go};
 // Optional cloud accounts (sync.js on the class site). Without it, progress stays on this device.
+addEventListener('storage',e=>{if(e.key!==KEY)return;try{const v=JSON.parse(e.newValue);if(v&&Array.isArray(v.sread)){S.sread=[...new Set([...(S.sread||[]),...v.sread])].sort((a,b)=>a-b)}}catch(x){}});// summaries marked read on chapters.html in another tab
 if(window.JCSync)JCSync.attach({app:'quest',mount:'.hstat',get:()=>S,set:v=>{S=Object.assign(blank(),v);save();hdr();if(VIEW==='map'||VIEW==='badges')go(VIEW)}});
 if(window.JCSync)JCSync.onAuth(()=>{hdr();if(VIEW==='map')go('map')});
 })();

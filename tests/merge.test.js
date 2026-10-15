@@ -46,4 +46,6 @@ eq(J.summary('practice', p).best, p.best, 'practice summary');
 const fin = Object.assign(h('2026-10-05T10:00:00Z', 'final', 80), { c: 36, n: 45, byd: { 1: { c: 5, n: 6 } } });
 eq(J.attemptRows([pL.history[0], fin], '2026-10-04T00:00:00Z'), [{ test_id: 'final', test_name: 'final', mode: 'test', score: 36, total: 45, by_domain: { 1: { c: 5, n: 6 } }, taken_at: '2026-10-05T10:00:00Z' }], 'attempt rows after watermark');
 eq(J.attemptRows([pL.history[0]], '').length, 1, 'all rows with empty watermark');
+eq(J.merge.quest({ sread: [3, 1] }, { sread: [2, 3] }).sread, [1, 2, 3], 'summary read: union of chapters, sorted');
+eq(J.merge.quest({}, null).sread, [], 'summary read: empty by default');
 console.log('merge tests: ' + n + ' passed');

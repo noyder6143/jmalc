@@ -41,6 +41,7 @@ def chapter(c):
     out.append('<section class="know"><h3>✅ Know for the test</h3>' + ul(s['know']) + '</section>')
     out.append('<section class="check"><h3>🧠 Quick self-check</h3><p class="hint">Answer in your head, then tap a question to see the answer.</p>' +
                ''.join(f'<details><summary><b>Q{i}.</b> {E(q)}</summary><p><b>Answer:</b> {E(a)}</p></details>' for i, (q, a) in enumerate(s['check'], 1)) + '</section>')
+    out.append(f'<div class="mk noprint"><button type="button" class="mark" data-ch="{n}">✓ Mark as read</button><span class="mkt" role="status" aria-live="polite">Finished reading? Tap the button. It shows on your home page.</span></div>')
     out.append(f'<div class="next noprint"><a class="go q" href="quest.html#ch={n}">🎮 Learn it: Chapter {n} Quest lessons</a>'
                f'<a class="go p" href="practice.html#chapter={n}">📝 Practice it: Chapter {n} Quiz</a></div>')
     out.append(f'<p class="opt noprint">Want every detail? <a href="https://texidium.com/" target="_blank" rel="noopener">Full textbook (optional): Chapter {n} on Texidium</a></p>')
@@ -77,6 +78,10 @@ details[open] summary{border-bottom:1px solid #dfe6ee}details p{margin:0;padding
 .opt{margin:.9rem 0 0;font-size:.9rem;color:#46566a}.opt a{color:#0f5f66}
 footer{text-align:center;padding:0 1rem 2rem;font-size:.82rem;color:#7a8796}footer a{color:#5c6b7c}
 .pfoot{display:none}
+#acct{margin-top:.5rem}#acct:empty{display:none}
+.mk{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin-top:1.3rem;background:#eef8f3;border-radius:14px;padding:.8rem}
+button.mark{background:#2ecc71;color:#073b1d;font-size:1.1rem;min-height:56px;padding:.7rem 1.3rem;border-radius:14px}button.mark.on{background:#fff;color:#1d6b3f;border:2px solid #2ecc71}
+.mkt{flex:1;min-width:12rem;font-size:.95rem;color:#2c3a4b}
 @media print{
  @page{size:letter;margin:.55in .55in .6in}
  body{background:#fff;font-size:11pt;line-height:1.4}header{background:none;color:#1d3557;padding:0 0 .3rem;text-align:left;border-bottom:3px solid #0f7c83}
@@ -103,7 +108,16 @@ var t=document.getElementById('alltog');if(t)t.onclick=function(){d.classList.to
 var pr=document.getElementById('pr');if(pr)pr.onclick=function(){print()};
 var opened=[];addEventListener('beforeprint',function(){opened=[];[].forEach.call(document.querySelectorAll('details:not([open])'),function(x){x.open=true;opened.push(x)})});
 addEventListener('afterprint',function(){opened.forEach(function(x){x.open=false})});
-show();window.__ch={cur:cur,show:show}})();"""
+show();window.__ch={cur:cur,show:show};
+var QK='ic3quest_v1';function qget(){try{return JSON.parse(localStorage.getItem(QK))||{}}catch(e){return {}}}
+function marks(){var r=qget().sread||[];[].forEach.call(document.querySelectorAll('button.mark'),function(b){var on=r.indexOf(+b.dataset.ch)>=0;b.classList.toggle('on',on);b.textContent=on?'✅ Read':'✓ Mark as read';b.setAttribute('aria-pressed',on?'true':'false');
+ b.nextElementSibling.textContent=on?'Nice work! Next step: Play the Quest lessons.':'Finished reading? Tap the button. It shows on your home page.'})}
+[].forEach.call(document.querySelectorAll('button.mark'),function(b){b.onclick=function(){var s=qget(),n=+b.dataset.ch,r=Array.isArray(s.sread)?s.sread:[];
+ if(r.indexOf(n)<0){r.push(n);r.sort(function(a,c){return a-c});s.sread=r;try{localStorage.setItem(QK,JSON.stringify(s))}catch(e){}if(window.JCSync)JCSync.changed('quest')}marks()}});
+marks();addEventListener('storage',marks);
+if(window.JCSync&&JCSync.enabled){JCSync.attach({mount:'#acct'});JCSync.onAuth(marks)}
+var hm=document.getElementById('home');function hl(){if(hm)hm.href='index.html#ch'+cur()}addEventListener('hashchange',hl);hl();
+})();"""
 
 def build():
     nav = ''.join(f'<a href="#ch={c["n"]}" data-ch="{c["n"]}">{c["icon"]} Ch {c["n"]}</a>' for c in CHAPTERS)
@@ -114,11 +128,12 @@ def build():
 <meta name="description" content="Plain-language study summaries for Chapters 1-7 of IC3 GS5 Computing Fundamentals.">
 <link rel="manifest" href="site.webmanifest"><meta name="theme-color" content="#1d3557">
 <link rel="icon" href="icons/home-192.png"><link rel="apple-touch-icon" href="icons/home-180.png">
+<script src="config.js"></script><script src="sync.js"></script>
 <style>{CSS}</style></head><body>
-<header><p class="brand"><a href="index.html">Jmal C's Digital Literacy Class</a></p><p>Chapter Summaries · IC3 Computing Fundamentals, Chapters 1-7</p></header>
+<header><p class="brand"><a href="index.html">Jmal C's Digital Literacy Class</a></p><div id="acct" class="noprint"></div><p>Chapter Summaries · IC3 Computing Fundamentals, Chapters 1-7</p></header>
 <nav class="chnav" aria-label="Chapters">{nav}</nav>
 <main>
-<div class="tools noprint"><a class="btnl alt" href="index.html#chapters">← Study Path</a><span class="sp"></span>
+<div class="tools noprint"><a class="btnl alt" href="index.html#ch" id="home">← Home</a><span class="sp"></span>
 <button type="button" id="alltog">Show all 7 chapters</button><button type="button" id="pr">🖨️ Print / Save as PDF</button>
 <a class="btnl alt" href="resources/{PDF_NAME}" target="_blank" rel="noopener">All chapters PDF</a></div>
 <p class="noprint" style="margin:-.3rem 0 1rem;color:#46566a;font-size:.92rem">Read the summary, check yourself, then learn it in the Quest and practice it in the Chapter Quiz. These summaries are written for our class in plain language.</p>

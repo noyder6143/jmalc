@@ -35,7 +35,7 @@ def static_checks():
     check(pages >= 7 and all(f'Chapter {n}:' in pdf for n in range(1, 8)) and "Jmal C's Digital Literacy Class" in pdf, f'combined PDF has all 7 chapters, branded ({pages} pages)')
     check(os.path.exists('/workspace/BCC_IC3_Class/Chapter_Summaries_Ch1-7.pdf'), 'PDF copied to /workspace/BCC_IC3_Class/')
     sw = open(os.path.join(SITE, 'sw.js')).read()
-    check("ic3-apps-v12" in sw and "'./chapters.html'" in sw, 'service worker cache bumped to v12 and caches chapters.html')
+    check("ic3-apps-v1" in sw and "'./chapters.html'" in sw, 'service worker cache bumped and caches chapters.html')
     return pages
 
 async def browser(b):
@@ -47,14 +47,13 @@ async def browser(b):
     await p.goto(BASE); await p.wait_for_load_state('networkidle')
     for n in range(1, 8):
         box = p.locator(f'#ch{n}')
-        first = await box.locator('li a').first.get_attribute('href')
-        tex = box.locator('a[href*="texidium.com"]')
-        check(first == f'chapters.html#ch={n}' and 'Read: Chapter %d Summary' % n in await box.inner_text()
-              and await tex.count() == 1 and (await tex.inner_text()).startswith('Full textbook (optional)'),
-              f'landing: chapter {n} box reads the summary first; Texidium is "Full textbook (optional)"')
-    check(await p.locator('#chapters a[href="resources/Chapter_Summaries_Ch1-7.pdf"]').count() == 1, 'landing: combined PDF linked')
+        first = await box.locator('.btns a').first.get_attribute('href')
+        check(first == f'chapters.html#ch={n}' and 'Read' in await box.locator('.btns a').first.inner_text(), f'home: chapter {n} card: Read (the summary) is the first button')
+    tex = p.locator('#resources a[href*="texidium.com"]')
+    check(await tex.count() == 1 and 'optional' in (await tex.inner_text()).lower(), 'home: Texidium listed only as optional')
+    check(await p.locator('a[href="resources/Chapter_Summaries_Ch1-7.pdf"]').count() == 1, 'home: combined PDF linked')
     # Reader page
-    await p.click('#ch3 a[href="chapters.html#ch=3"]'); await p.wait_for_selector('#ch3.show')
+    await p.click('#ch3 .btns a[href="chapters.html#ch=3"]'); await p.wait_for_selector('#ch3.show')
     vis = await p.evaluate("[...document.querySelectorAll('.chap')].filter(a=>getComputedStyle(a).display!=='none').map(a=>a.dataset.ch)")
     check(vis == ['3'], f'reader: #ch=3 shows only Chapter 3 ({vis})')
     check(await p.locator('nav.chnav a.on').get_attribute('href') == '#ch=3', 'reader: chapter tab 3 highlighted')

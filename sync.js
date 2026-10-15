@@ -47,6 +47,7 @@
     o.games = maxMap(L.games, C.games); o.sims = maxMap(L.sims, C.sims);
     o.seen = unionMap(L.seen, C.seen); o.mission = orMap(L.mission, C.mission);
     o.badges = union(L.badges, C.badges);
+    o.sread = union(L.sread, C.sread).filter(function (n) { return typeof n === "number"; }).sort(function (a, b) { return a - b; }); // chapter summaries marked read
     o.days = union(L.days, C.days).sort().slice(-60);
     return o;
   }

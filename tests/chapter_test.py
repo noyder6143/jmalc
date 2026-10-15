@@ -37,7 +37,7 @@ async def part_a(b):
     errs, ext = [], []; p = await ctx.new_page(); watch(p, errs, ext)
     # Landing page
     await p.goto(BASE); await p.wait_for_load_state('networkidle')
-    chs = p.locator('#chapters .rbox.ch'); check(await chs.count() == 7, 'landing: 7 chapter boxes in the study path')
+    chs = p.locator('main .card.ch'); check(await chs.count() == 7, 'landing: 7 chapter cards on the home page')
     for n in range(1, 8):
         box = p.locator(f'#ch{n}')
         check(await box.locator(f'a[href="quest.html#ch={n}"]').count() == 1 and await box.locator(f'a[href="practice.html#chapter={n}"]').count() == 1,
@@ -47,7 +47,8 @@ async def part_a(b):
     for host, name in [('quizlet.com', 'Quizlet'), ('liveworksheets.com', 'Liveworksheets'), ('typingclub.com', 'Typing Club'), ('texidium.com', 'Texidium'), ('kahoot.it', 'Kahoot')]:
         check(await p.locator(f'#resources a[href*="{host}"]').count() >= 1, f'landing: {name} link in Class Tools')
     check('Extra practice' in txt and await p.locator('#resources a[href^="resources/workbooks/"]').count() == 10, 'landing: 10 LearnKey workbooks kept, labeled Extra practice')
-    check(await p.locator('#chapters a[href^="resources/workbooks/"]').count() >= 7, 'landing: each chapter links matching LearnKey workbooks')
+    wb = await p.locator('#extra .meta').evaluate_all('e=>e.map(x=>x.textContent)')
+    check(all(any(f'Chapter' in w and str(n) in w.split('·')[0] for w in wb) for n in range(1, 8)), 'landing: every chapter has a matching LearnKey workbook (labeled by chapter)')
     check('\u2014' not in await p.content(), 'landing: no em dashes')
     await p.screenshot(path=SHOTS + 'ch_landing.png', full_page=True)
     # Practice Lab Chapter Quiz
@@ -122,7 +123,7 @@ async def part_b(b):
     await t.goto(BASE + 'teacher.html'); await t.wait_for_selector('#tb')
     cls = await t.inner_text('#chcls'); check('Ch 2: Hardware' in cls and '100%' in cls, 'teacher: class progress by chapter card')
     await t.click('#tb tbody tr[data-id]'); det = await t.inner_text('tr.det')
-    check('By textbook chapter' in det and re.search(r'Ch 2: Hardware\s+100%\s+100%', det), 'teacher: student detail shows Chapter 2 quiz and lab accuracy')
+    check('By textbook chapter' in det and re.search(r'Ch 2: Hardware\s+Not yet\s+100%\s+100%', det), 'teacher: student detail shows Chapter 2 quiz and lab accuracy')
     check(re.search(r'Ch 2: Hardware.*\(1/\d+\)', det, re.S) is not None, 'teacher: Quest lessons read per chapter')
     await t.screenshot(path=SHOTS + 'ch_teacher_dash.png', full_page=True)
     # Teaching Materials tab

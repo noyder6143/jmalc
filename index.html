@@ -1,119 +1,137 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Jmal C's Digital Literacy Class</title>
+<meta name="description" content="Student home for Jmal C's Digital Literacy Class: IC3 Computing Fundamentals, Chapters 1-7.">
 <link rel="manifest" href="site.webmanifest"><meta name="theme-color" content="#1d3557">
 <link rel="icon" href="icons/home-192.png"><link rel="apple-touch-icon" href="icons/home-180.png">
 <script src="config.js"></script><script src="sync.js"></script>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#f4f7fb;color:#14202e;line-height:1.5}
-header{background:linear-gradient(120deg,#1d3557,#0f7c83);color:#fff;padding:2.2rem 1.2rem 2.6rem;text-align:center}
-header h1{margin:0 0 .4rem;font-size:clamp(1.5rem,5vw,2.3rem)}header p{margin:0;opacity:.9}
-main{max-width:860px;margin:-1.6rem auto 2rem;padding:0 1rem;display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-.card{background:#fff;border-radius:18px;padding:1.4rem;box-shadow:0 6px 20px rgba(20,32,46,.1);display:flex;flex-direction:column}
-.card h2{margin:.3rem 0 .4rem}.card p{margin:0 0 1rem;color:#46566a;flex:1}.emoji{font-size:2.4rem}
-a.btn{display:block;text-align:center;text-decoration:none;font-weight:700;font-size:1.15rem;padding:1rem;border-radius:14px}
-a.quest{background:#ffcc33;color:#1a1a1a}a.lab{background:#0f7c83;color:#fff}a.btn:focus-visible{outline:3px solid #1d3557;outline-offset:3px}
-.note{max-width:860px;margin:0 auto 2.5rem;padding:0 1rem}.note div{background:#fff;border-left:5px solid #0f7c83;border-radius:12px;padding:1rem 1.2rem;color:#2c3a4b}
-.note h3{margin:.2rem 0 .4rem;font-size:1rem}.note ul{margin:.3rem 0 0;padding-left:1.2rem}
-#acct{margin-top:.9rem}#acct:empty{display:none}footer{text-align:center;padding:0 1rem 2rem;font-size:.8rem;color:#7a8796}footer a{color:#7a8796}
-.res{max-width:860px;margin:0 auto 2rem;padding:0 1rem}.res>h2{margin:.5rem 0 .8rem}
-.rgrid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
-.rbox{background:#fff;border-radius:18px;padding:1.1rem 1.2rem;box-shadow:0 6px 20px rgba(20,32,46,.1)}.rbox.wide{grid-column:1/-1}
-.rbox h3{margin:.1rem 0 .5rem}.rbox p{margin:0 0 .8rem;color:#46566a}.rbox ul,.rbox ol{list-style:none;margin:0;padding:0}
-.rbox li{padding:.55rem 0;border-top:1px solid #e6ebf2}.rbox li:first-child{border-top:0}
-.rbox li a{color:#0f5f66;font-weight:600;text-decoration:none}.res .lead{margin:-.3rem 0 1rem;color:#46566a}.rbox .topics{font-size:.88rem}.rbox li.xp a{font-weight:500}.rbox h4{margin:.9rem 0 .2rem;font-size:.95rem}.rbox li a:hover{text-decoration:underline}.rbox li.rd a{font-size:1.02rem}.rbox li.opt a{font-weight:400;color:#5c6b7c;font-size:.9rem}.meta{color:#7a8796;font-size:.85rem;white-space:nowrap}
-</style></head><body>
-<header><h1>Jmal C's Digital Literacy Class</h1><p style="opacity:.95;font-size:1.05rem;margin:0 0 .35rem">IC3 Computing Fundamentals</p><p>Learn it, practice it, pass it. Pick an app to get started, or scroll down for class resources.</p><div id="acct"></div></header>
+<style>*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#f4f7fb;color:#14202e;line-height:1.5;font-size:18px}
+a{color:#0f5f66}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #ffcc33;outline-offset:3px}
+header{background:linear-gradient(120deg,#1d3557,#0f7c83);color:#fff;padding:1rem 1rem 3.2rem}
+.top{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}.brand{font-weight:800;font-size:1rem;flex:1;min-width:12rem}
+#acct{flex:0 0 auto}#acct .jcs-chip{font-size:1rem;padding:.55em 1em;min-height:44px}
+.hello{max-width:760px;margin:1rem auto 0}.hello h1{margin:0;font-size:clamp(1.6rem,6vw,2.3rem);line-height:1.2}.hello p{margin:.3rem 0 0;opacity:.95}
+.next{margin-top:.9rem;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:.7rem .9rem}
+.next b{display:block;font-size:1.08rem}.next span{display:block;opacity:.95;font-size:.95rem}
+main{max-width:760px;margin:-2.3rem auto 1.5rem;padding:0 .8rem;display:grid;gap:1rem}
+.card{background:#fff;border-radius:18px;padding:1.1rem;box-shadow:0 6px 20px rgba(20,32,46,.1)}
+.card h2{margin:0 0 .5rem;font-size:1.3rem;color:#1d3557}
+.bar{height:22px;background:#e6ebf2;border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#0f7c83,#2ecc71);border-radius:999px;transition:width .4s}
+.ptxt{display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap;margin-top:.45rem;font-size:1rem}
+.go{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;text-align:center;text-decoration:none;font-weight:800;font-size:1.15rem;padding:1rem;border-radius:16px;min-height:60px;background:#ffcc33;color:#1a1a1a;margin-top:.9rem;box-shadow:0 3px 0 #d9a800}
+.go small{display:block;font-weight:600;font-size:.95rem;margin-top:.1rem}
+.sec{margin:.6rem 0 -.3rem;font-size:1.25rem;color:#1d3557;padding:0 .2rem}
+.ch{border-left:8px solid #c9d4e1}.ch.done{border-left-color:#2ecc71}
+.ch .hd{display:flex;align-items:flex-start;gap:.6rem}.ch .ic{font-size:2rem;line-height:1}.ch h3{margin:0;font-size:1.2rem;flex:1;color:#1d3557}.ch h3 small{display:block;font-size:.85rem;color:#5c6b7c;font-weight:600}
+.badge{display:none;margin:.5rem 0 0 2.6rem;background:#2ecc71;color:#073b1d;font-weight:800;border-radius:999px;padding:.25em .7em;font-size:.88rem;white-space:nowrap}.ch.done .badge{display:inline-block}
+.btns{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:.9rem 0 .7rem}
+.btns a{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72px;border-radius:14px;text-decoration:none;font-weight:800;font-size:1.08rem;padding:.5rem .3rem;line-height:1.15;text-align:center}
+.btns a span{font-size:1.5rem;line-height:1.1}.btns a small{font-weight:600;font-size:.78rem;opacity:.9;margin-top:.15rem}
+.btns .read{background:#1d3557;color:#fff}.btns .play{background:#ffcc33;color:#1a1a1a}.btns .quiz{background:#0f7c83;color:#fff}
+.btns a.ok{box-shadow:inset 0 0 0 3px #2ecc71}
+ul.chk{list-style:none;margin:0;padding:0;font-size:1rem}ul.chk li{display:flex;gap:.5rem;align-items:center;padding:.3rem 0;border-top:1px solid #eef2f6}ul.chk li:first-child{border-top:0}
+ul.chk .b{width:1.6rem;height:1.6rem;flex:0 0 1.6rem;border-radius:7px;border:2px solid #b9c3cf;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff}
+ul.chk li.y .b{background:#2ecc71;border-color:#2ecc71}ul.chk li.y .b::after{content:"✓"}
+.ready{display:flex;gap:.8rem;align-items:center;margin:.3rem 0 .7rem}.dots{display:flex;gap:.4rem}.dots i{width:2.2rem;height:2.2rem;border-radius:50%;border:3px solid #b9c3cf;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;color:#fff}
+.dots i.y{background:#2ecc71;border-color:#2ecc71}.dots i.y::after{content:"✓"}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+a.btn{display:flex;align-items:center;justify-content:center;gap:.35rem;text-align:center;text-decoration:none;font-weight:800;padding:.85rem .6rem;border-radius:14px;min-height:56px;font-size:1.02rem}
+a.b1{background:#0f7c83;color:#fff}a.b2{background:#1d3557;color:#fff}a.b3{background:#eef3f8;color:#1d3557;border:2px solid #c9d4e1}
+ul.tools{list-style:none;margin:0;padding:0;display:grid;gap:.45rem}ul.tools a{display:flex;gap:.7rem;align-items:center;min-height:56px;padding:.55rem .8rem;border-radius:14px;background:#f4f7fb;text-decoration:none;color:#14202e}
+ul.tools a b{display:block;color:#0f5f66}ul.tools a span.e{font-size:1.5rem}ul.tools a small{display:block;color:#5c6b7c;font-size:.88rem}
+details.x{border-radius:14px;background:#f4f7fb}details.x summary{cursor:pointer;font-weight:800;padding:.9rem 1rem;min-height:52px;color:#1d3557}
+details.x ol{margin:0;padding:0 1rem 1rem 2.2rem}details.x li{padding:.35rem 0}details.x .meta{color:#7a8796;font-size:.85rem}
+.small{font-size:.92rem;color:#46566a}.muted{color:#5c6b7c}
+.note ul{margin:.3rem 0 0;padding-left:1.2rem}.note li{margin:.3rem 0;font-size:.95rem}
+footer{text-align:center;padding:0 1rem 2rem;font-size:.85rem;color:#7a8796}footer a{color:#7a8796}
+@media (min-width:700px){header{padding:1.2rem 1.2rem 3.4rem}.btns a{min-height:78px}}
+@media (max-width:360px){.btns a{font-size:.98rem}.row2{grid-template-columns:1fr}}</style></head><body>
+<header><div class="top"><div class="brand">Jmal C's Digital Literacy Class</div><div id="acct"></div></div>
+<div class="hello"><h1 id="hi">Welcome!</h1><p>IC3 Computing Fundamentals, Chapters 1 to 7. Each chapter has 3 steps: Read, Play, Quiz.</p>
+<div class="next" id="nextc" role="status"><b>📅 Classes: Monday and Wednesday, 6:00 to 9:00 PM ET</b><span>October 19 to November 25. Week 1 is in person. The other weeks are online.</span></div></div></header>
 <main>
-<div class="card"><div class="emoji">🎮</div><h2>Computing Fundamentals Quest</h2>
-<p>Learn every topic as a game. Seven levels plus a Boss Level, with short lessons, flashcards, matching games, Windows practice clicks, Spot the Scam, quizzes, XP, and badges.</p>
-<a class="btn quest" href="quest.html">Start the Quest</a></div>
-<div class="card"><div class="emoji">📝</div><h2>Practice Lab</h2>
-<p>Practice tests set up like the real exam: a Chapter Quiz for each textbook chapter (1 to 7), 7 topic tests, 8 full practice exams, and a Final Exam Review. Use Training mode for hints and explanations, or Testing mode for a timed run with a score breakdown.</p>
-<a class="btn lab" href="practice.html">Open the Practice Lab</a></div>
+<section class="card" id="progress" aria-labelledby="pgh"><h2 id="pgh">📈 My progress</h2>
+<div class="bar" id="ovbar" role="progressbar" aria-label="Progress in Chapters 1 to 7" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+<div class="ptxt"><b id="ovpct">0% done</b><span id="ovch">0 of 7 chapters complete</span></div>
+<a class="go cont" href="chapters.html#ch=1">▶ Start here<small>Chapter 1: Read the summary</small></a>
+<p class="small" style="margin:.7rem 0 0">A chapter is complete when you get <b>80% or more</b> on its quiz in Test mode.</p></section>
+<h2 class="sec" id="chapters">📘 My chapters</h2>
+<section class="card ch" id="ch1" aria-labelledby="cht1"><div class="hd"><span class="ic" aria-hidden="true">🪟</span><h3 id="cht1">Chapter 1: Operating Systems<small>Read about 9 min · 23 Quest lessons · 48 quiz questions</small></h3></div><span class="badge">✓ Chapter complete</span><div class="btns"><a class="read" href="chapters.html#ch=1"><span aria-hidden="true">📖</span>Read<small>Summary</small></a><a class="play" href="quest.html#ch=1"><span aria-hidden="true">🎮</span>Play<small>Quest lessons</small></a><a class="quiz" href="practice.html#chapter=1"><span aria-hidden="true">📝</span>Quiz<small>Get 80%</small></a></div><ul class="chk" aria-label="Chapter 1 checklist"><li><span class="b" aria-hidden="true"></span><span class="t">Summary: not read yet</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Quest lessons done: 0 of 23</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Best quiz score: none yet (goal: 80%)</span></li></ul></section>
+<section class="card ch" id="ch2" aria-labelledby="cht2"><div class="hd"><span class="ic" aria-hidden="true">🖥️</span><h3 id="cht2">Chapter 2: Hardware<small>Read about 8 min · 29 Quest lessons · 62 quiz questions</small></h3></div><span class="badge">✓ Chapter complete</span><div class="btns"><a class="read" href="chapters.html#ch=2"><span aria-hidden="true">📖</span>Read<small>Summary</small></a><a class="play" href="quest.html#ch=2"><span aria-hidden="true">🎮</span>Play<small>Quest lessons</small></a><a class="quiz" href="practice.html#chapter=2"><span aria-hidden="true">📝</span>Quiz<small>Get 80%</small></a></div><ul class="chk" aria-label="Chapter 2 checklist"><li><span class="b" aria-hidden="true"></span><span class="t">Summary: not read yet</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Quest lessons done: 0 of 29</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Best quiz score: none yet (goal: 80%)</span></li></ul></section>
+<section class="card ch" id="ch3" aria-labelledby="cht3"><div class="hd"><span class="ic" aria-hidden="true">📶</span><h3 id="cht3">Chapter 3: Networks and Mobile Devices<small>Read about 9 min · 36 Quest lessons · 63 quiz questions</small></h3></div><span class="badge">✓ Chapter complete</span><div class="btns"><a class="read" href="chapters.html#ch=3"><span aria-hidden="true">📖</span>Read<small>Summary</small></a><a class="play" href="quest.html#ch=3"><span aria-hidden="true">🎮</span>Play<small>Quest lessons</small></a><a class="quiz" href="practice.html#chapter=3"><span aria-hidden="true">📝</span>Quiz<small>Get 80%</small></a></div><ul class="chk" aria-label="Chapter 3 checklist"><li><span class="b" aria-hidden="true"></span><span class="t">Summary: not read yet</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Quest lessons done: 0 of 36</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Best quiz score: none yet (goal: 80%)</span></li></ul></section>
+<section class="card ch" id="ch4" aria-labelledby="cht4"><div class="hd"><span class="ic" aria-hidden="true">📁</span><h3 id="cht4">Chapter 4: File Management<small>Read about 8 min · 31 Quest lessons · 82 quiz questions</small></h3></div><span class="badge">✓ Chapter complete</span><div class="btns"><a class="read" href="chapters.html#ch=4"><span aria-hidden="true">📖</span>Read<small>Summary</small></a><a class="play" href="quest.html#ch=4"><span aria-hidden="true">🎮</span>Play<small>Quest lessons</small></a><a class="quiz" href="practice.html#chapter=4"><span aria-hidden="true">📝</span>Quiz<small>Get 80%</small></a></div><ul class="chk" aria-label="Chapter 4 checklist"><li><span class="b" aria-hidden="true"></span><span class="t">Summary: not read yet</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Quest lessons done: 0 of 31</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Best quiz score: none yet (goal: 80%)</span></li></ul></section>
+<section class="card ch" id="ch5" aria-labelledby="cht5"><div class="hd"><span class="ic" aria-hidden="true">💿</span><h3 id="cht5">Chapter 5: Software<small>Read about 7 min · 20 Quest lessons · 38 quiz questions</small></h3></div><span class="badge">✓ Chapter complete</span><div class="btns"><a class="read" href="chapters.html#ch=5"><span aria-hidden="true">📖</span>Read<small>Summary</small></a><a class="play" href="quest.html#ch=5"><span aria-hidden="true">🎮</span>Play<small>Quest lessons</small></a><a class="quiz" href="practice.html#chapter=5"><span aria-hidden="true">📝</span>Quiz<small>Get 80%</small></a></div><ul class="chk" aria-label="Chapter 5 checklist"><li><span class="b" aria-hidden="true"></span><span class="t">Summary: not read yet</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Quest lessons done: 0 of 20</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Best quiz score: none yet (goal: 80%)</span></li></ul></section>
+<section class="card ch" id="ch6" aria-labelledby="cht6"><div class="hd"><span class="ic" aria-hidden="true">☁️</span><h3 id="cht6">Chapter 6: Cloud Computing<small>Read about 7 min · 25 Quest lessons · 47 quiz questions</small></h3></div><span class="badge">✓ Chapter complete</span><div class="btns"><a class="read" href="chapters.html#ch=6"><span aria-hidden="true">📖</span>Read<small>Summary</small></a><a class="play" href="quest.html#ch=6"><span aria-hidden="true">🎮</span>Play<small>Quest lessons</small></a><a class="quiz" href="practice.html#chapter=6"><span aria-hidden="true">📝</span>Quiz<small>Get 80%</small></a></div><ul class="chk" aria-label="Chapter 6 checklist"><li><span class="b" aria-hidden="true"></span><span class="t">Summary: not read yet</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Quest lessons done: 0 of 25</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Best quiz score: none yet (goal: 80%)</span></li></ul></section>
+<section class="card ch" id="ch7" aria-labelledby="cht7"><div class="hd"><span class="ic" aria-hidden="true">🔒</span><h3 id="cht7">Chapter 7: Security and Maintenance<small>Read about 9 min · 46 Quest lessons · 98 quiz questions</small></h3></div><span class="badge">✓ Chapter complete</span><div class="btns"><a class="read" href="chapters.html#ch=7"><span aria-hidden="true">📖</span>Read<small>Summary</small></a><a class="play" href="quest.html#ch=7"><span aria-hidden="true">🎮</span>Play<small>Quest lessons</small></a><a class="quiz" href="practice.html#chapter=7"><span aria-hidden="true">📝</span>Quiz<small>Get 80%</small></a></div><ul class="chk" aria-label="Chapter 7 checklist"><li><span class="b" aria-hidden="true"></span><span class="t">Summary: not read yet</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Quest lessons done: 0 of 46</span></li><li><span class="b" aria-hidden="true"></span><span class="t">Best quiz score: none yet (goal: 80%)</span></li></ul></section>
+<section class="card" id="final" aria-labelledby="fnh"><h2 id="fnh">🎓 Final Exam Review</h2>
+<p class="small" style="margin:0 0 .4rem">When you finish the chapters, practice for the real IC3 exam. <b>Goal: score 80% or more on the Final Exam Review 2 times.</b></p>
+<div class="ready"><div class="dots" aria-hidden="true"><i></i><i></i></div><div id="rtxt"><b>0 of 2</b> times at 80% or more.</div></div>
+<div class="row2"><a class="btn b1" href="practice.html#final">📝 Final Exam Review</a><a class="btn b2" href="https://www.gmetrix.net" target="_blank" rel="noopener">🎯 GMetrix</a></div>
+<p class="small" style="margin:.6rem 0 0">GMetrix has the official practice tests. Your teacher gives you the GMetrix sign-in in class.</p></section>
+<section class="card" id="resources" aria-labelledby="rsh"><h2 id="rsh">🧰 Class Tools</h2>
+<ul class="tools"><li><a href="https://quizlet.com/user/azul5477/folders/part-1" target="_blank" rel="noopener"><span class="e" aria-hidden="true">🃏</span><span><b>Quizlet</b><small>Class flashcards</small></span></a></li><li><a href="https://kahoot.it/" target="_blank" rel="noopener"><span class="e" aria-hidden="true">🎉</span><span><b>Kahoot</b><small>Class game. Type the PIN from class</small></span></a></li><li><a href="https://bccadulteducationandtraining.typingclub.com/" target="_blank" rel="noopener"><span class="e" aria-hidden="true">⌨️</span><span><b>Typing Club</b><small>Typing practice (BCC Adult Ed)</small></span></a></li><li><a href="https://www.liveworksheets.com/workbook/299177" target="_blank" rel="noopener"><span class="e" aria-hidden="true">📝</span><span><b>Liveworksheets</b><small>Class workbook</small></span></a></li><li><a href="https://texidium.com/" target="_blank" rel="noopener"><span class="e" aria-hidden="true">📚</span><span><b>Texidium (optional)</b><small>The full textbook, if you want more detail</small></span></a></li></ul>
+<p class="small" style="margin:.6rem 0 0">Never post class logins online.</p>
+<h2 style="margin-top:1.1rem">📅 Calendar</h2>
+<div class="row2"><a class="btn b3" href="resources/Class_Calendar.pdf" target="_blank" rel="noopener">📅 Class Calendar (PDF)</a><a class="btn b3" href="resources/Chapter_Summaries_Ch1-7.pdf" target="_blank" rel="noopener">📖 All summaries (PDF)</a></div>
+<h2 style="margin-top:1.1rem">📂 More practice</h2>
+<div class="row2" style="margin-bottom:.6rem"><a class="btn b3" href="quest.html">🗺️ Full Quest map</a><a class="btn b3" href="practice.html">🧪 Practice Lab</a></div>
+<details class="x" id="extra"><summary>➕ Extra practice: LearnKey workbooks (10)</summary>
+<p class="small" style="margin:0 1rem .5rem">Optional. These PDFs go with the GMetrix lesson videos.</p><ol><li><a href="resources/workbooks/L01_Workbook_Mobile_Devices.pdf" target="_blank" rel="noopener">LearnKey Lesson 1: Mobile Devices</a> <span class="meta">Chapter 3 · PDF, 307 KB</span></li><li><a href="resources/workbooks/L02_Workbook_Hardware_Part_I.pdf" target="_blank" rel="noopener">LearnKey Lesson 2: Hardware Part I</a> <span class="meta">Chapter 2 · PDF, 492 KB</span></li><li><a href="resources/workbooks/L03_Workbook_Hardware_Part_II.pdf" target="_blank" rel="noopener">LearnKey Lesson 3: Hardware Part II</a> <span class="meta">Chapter 2, 3 · PDF, 300 KB</span></li><li><a href="resources/workbooks/L04_Workbook_Computer_Software_Architecture_Part_I.pdf" target="_blank" rel="noopener">LearnKey Lesson 4: Software Architecture Part I</a> <span class="meta">Chapter 1 · PDF, 385 KB</span></li><li><a href="resources/workbooks/L05_Workbook_Computer_Software_Architecture_Part_II.pdf" target="_blank" rel="noopener">LearnKey Lesson 5: Software Architecture Part II</a> <span class="meta">Chapter 4 · PDF, 290 KB</span></li><li><a href="resources/workbooks/L06_Workbook_Computer_Software_Architecture_Part_III.pdf" target="_blank" rel="noopener">LearnKey Lesson 6: Software Architecture Part III</a> <span class="meta">Chapter 4, 5, 7 · PDF, 293 KB</span></li><li><a href="resources/workbooks/L07_Workbook_Backup_and_Restore.pdf" target="_blank" rel="noopener">LearnKey Lesson 7: Backup and Restore</a> <span class="meta">Chapter 7 · PDF, 300 KB</span></li><li><a href="resources/workbooks/L08_Workbook_File_Sharing.pdf" target="_blank" rel="noopener">LearnKey Lesson 8: File Sharing</a> <span class="meta">Chapter 4, 6 · PDF, 317 KB</span></li><li><a href="resources/workbooks/L09_Workbook_Cloud_Computing.pdf" target="_blank" rel="noopener">LearnKey Lesson 9: Cloud Computing</a> <span class="meta">Chapter 6 · PDF, 296 KB</span></li><li><a href="resources/workbooks/L10_Workbook_Security.pdf" target="_blank" rel="noopener">LearnKey Lesson 10: Security</a> <span class="meta">Chapter 7 · PDF, 285 KB</span></li></ol>
+<p class="small" style="margin:0 1rem .4rem">More study sheets: <a href="resources/study/Student_Vocab_Flashcards.pdf" target="_blank" rel="noopener">Vocabulary Flashcards</a> · <a href="resources/study/Student_Workbook_Handouts.pdf" target="_blank" rel="noopener">Workbook Handouts</a></p></details></section>
+<a class="go cont" href="chapters.html#ch=1">▶ Start here<small>Chapter 1: Read the summary</small></a>
+<section class="card note"><h2 style="font-size:1.1rem">💡 Good to know</h2><ul>
+<li id="local-note">Your progress saves on this device and in this browser. Use the same phone or computer each time.</li>
+<li id="cloud-note" hidden>Want your progress on any device? Tap <b>☁️ Sign in</b> at the top. Make a free account with the class code from your teacher.</li>
+<li>Add this site to your home screen: in Chrome, tap the menu, then "Add to Home screen". On iPhone, tap Share, then "Add to Home Screen".</li>
+<li>After you open each app one time, it works offline too.</li></ul></section>
 </main>
-<!--CH-START (generated by tools/build_site.py; edit tools/chapters.py)-->
-<section class="res" id="chapters"><h2>📘 Chapters 1-7 Study Path</h2><p class="lead">Our class follows Chapters 1 to 7 of the class textbook (IC3 GS5 Computing Fundamentals). For each chapter: read the chapter summary, learn it in the Quest, then score 80% or more on the Chapter Quiz.</p><p class="lead"><a href="chapters.html#ch=1"><b>📖 Open the Chapter Summaries</b></a> · <a href="resources/Chapter_Summaries_Ch1-7.pdf" target="_blank" rel="noopener">All 7 chapters as one PDF</a></p><div class="rgrid"><div class="rbox ch" id="ch1"><h3>🪟 Chapter 1: Operating Systems</h3>
-<p class="topics">What an operating system does · Popular desktop and mobile operating systems · User accounts and profiles · Signing in, locking, sleep, hibernate, and shutting down · Start menu, desktop, taskbar, and Task View · Settings app and Control Panel · System-wide vs. personal settings · Personalizing the desktop · Touch gestures · Operating system updates</p><ul>
-<li class="rd">📖 <a href="chapters.html#ch=1"><b>Read: Chapter 1 Summary</b></a> <span class="meta">about 9 min</span></li>
-<li>🎮 <a href="quest.html#ch=1">Learn: 23 Quest lessons for Chapter 1</a></li>
-<li>📝 <a href="practice.html#chapter=1">Practice: Chapter 1 Quiz</a> <span class="meta">48 questions</span></li>
-<li class="xp"><a href="resources/workbooks/L04_Workbook_Computer_Software_Architecture_Part_I.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Software Architecture Part I workbook</a> <span class="meta">PDF, 385 KB</span></li><li class="xp opt"><a href="https://texidium.com/" target="_blank" rel="noopener">Full textbook (optional): Chapter 1 on Texidium</a></li></ul></div>
-<div class="rbox ch" id="ch2"><h3>🖥️ Chapter 2: Hardware</h3>
-<p class="topics">Drivers, firmware, and platforms · Units of measure (bits, bytes, hertz) · Memory (RAM) vs. storage · Types of computers · Keyboards, mice, touch screens, and styluses · Smartphone hardware · Power plans and battery life · Peripherals and ports · Bluetooth, infrared, and other wireless connections</p><ul>
-<li class="rd">📖 <a href="chapters.html#ch=2"><b>Read: Chapter 2 Summary</b></a> <span class="meta">about 8 min</span></li>
-<li>🎮 <a href="quest.html#ch=2">Learn: 29 Quest lessons for Chapter 2</a></li>
-<li>📝 <a href="practice.html#chapter=2">Practice: Chapter 2 Quiz</a> <span class="meta">62 questions</span></li>
-<li class="xp"><a href="resources/workbooks/L02_Workbook_Hardware_Part_I.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Hardware Part I workbook</a> <span class="meta">PDF, 492 KB</span></li><li class="xp"><a href="resources/workbooks/L03_Workbook_Hardware_Part_II.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Hardware Part II workbook</a> <span class="meta">PDF, 300 KB</span></li><li class="xp opt"><a href="https://texidium.com/" target="_blank" rel="noopener">Full textbook (optional): Chapter 2 on Texidium</a></li></ul></div>
-<div class="rbox ch" id="ch3"><h3>📶 Chapter 3: Networks and Mobile Devices</h3>
-<p class="topics">Why we network · Network basics and IP addresses · Internet service: DSL, cable, fiber, satellite, cellular · Bandwidth and speed · Modems, routers, and LANs · Ethernet · Wi-Fi and wireless security · Cellular networks and phone plans · How phones and tablets connect · Landlines and VoIP · Voice mail</p><ul>
-<li class="rd">📖 <a href="chapters.html#ch=3"><b>Read: Chapter 3 Summary</b></a> <span class="meta">about 9 min</span></li>
-<li>🎮 <a href="quest.html#ch=3">Learn: 36 Quest lessons for Chapter 3</a></li>
-<li>📝 <a href="practice.html#chapter=3">Practice: Chapter 3 Quiz</a> <span class="meta">63 questions</span></li>
-<li class="xp"><a href="resources/workbooks/L01_Workbook_Mobile_Devices.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Mobile Devices workbook</a> <span class="meta">PDF, 307 KB</span></li><li class="xp"><a href="resources/workbooks/L03_Workbook_Hardware_Part_II.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Hardware Part II workbook</a> <span class="meta">PDF, 300 KB</span></li><li class="xp opt"><a href="https://texidium.com/" target="_blank" rel="noopener">Full textbook (optional): Chapter 3 on Texidium</a></li></ul></div>
-<div class="rbox ch" id="ch4"><h3>📁 Chapter 4: File Management</h3>
-<p class="topics">Folders, directories, and paths · Rights and permissions · File Explorer and windows · File types and extensions · Copy, move, rename, delete, and new folders · Searching and sorting · Recycle Bin · Default save and download locations · Getting photos off a phone · Managing media files · Sharing files and zipping/unzipping</p><ul>
-<li class="rd">📖 <a href="chapters.html#ch=4"><b>Read: Chapter 4 Summary</b></a> <span class="meta">about 8 min</span></li>
-<li>🎮 <a href="quest.html#ch=4">Learn: 31 Quest lessons for Chapter 4</a></li>
-<li>📝 <a href="practice.html#chapter=4">Practice: Chapter 4 Quiz</a> <span class="meta">82 questions</span></li>
-<li class="xp"><a href="resources/workbooks/L05_Workbook_Computer_Software_Architecture_Part_II.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Software Architecture Part II workbook</a> <span class="meta">PDF, 290 KB</span></li><li class="xp"><a href="resources/workbooks/L06_Workbook_Computer_Software_Architecture_Part_III.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Software Architecture Part III workbook</a> <span class="meta">PDF, 293 KB</span></li><li class="xp"><a href="resources/workbooks/L08_Workbook_File_Sharing.pdf" target="_blank" rel="noopener">Extra practice: LearnKey File Sharing workbook</a> <span class="meta">PDF, 317 KB</span></li><li class="xp opt"><a href="https://texidium.com/" target="_blank" rel="noopener">Full textbook (optional): Chapter 4 on Texidium</a></li></ul></div>
-<div class="rbox ch" id="ch5"><h3>💿 Chapter 5: Software</h3>
-<p class="topics">Why we use software · Getting software: stores, websites, licenses, subscriptions · System requirements · Install, uninstall, repair, and update · App preferences and options (Office) · Windows apps and the Microsoft Store · Messaging apps (SMS, MMS, chat)</p><ul>
-<li class="rd">📖 <a href="chapters.html#ch=5"><b>Read: Chapter 5 Summary</b></a> <span class="meta">about 7 min</span></li>
-<li>🎮 <a href="quest.html#ch=5">Learn: 20 Quest lessons for Chapter 5</a></li>
-<li>📝 <a href="practice.html#chapter=5">Practice: Chapter 5 Quiz</a> <span class="meta">38 questions</span></li>
-<li class="xp"><a href="resources/workbooks/L06_Workbook_Computer_Software_Architecture_Part_III.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Software Architecture Part III workbook</a> <span class="meta">PDF, 293 KB</span></li><li class="xp opt"><a href="https://texidium.com/" target="_blank" rel="noopener">Full textbook (optional): Chapter 5 on Texidium</a></li></ul></div>
-<div class="rbox ch" id="ch6"><h3>☁️ Chapter 6: Cloud Computing</h3>
-<p class="topics">What the cloud is and why it helps · Cloud accounts · OneDrive · iCloud · Dropbox and Google Drive · Upload, download, and sync · Sharing links and permissions · Web apps, SaaS, CRM, LMS, and discussion boards · Mobile notifications</p><ul>
-<li class="rd">📖 <a href="chapters.html#ch=6"><b>Read: Chapter 6 Summary</b></a> <span class="meta">about 7 min</span></li>
-<li>🎮 <a href="quest.html#ch=6">Learn: 25 Quest lessons for Chapter 6</a></li>
-<li>📝 <a href="practice.html#chapter=6">Practice: Chapter 6 Quiz</a> <span class="meta">47 questions</span></li>
-<li class="xp"><a href="resources/workbooks/L08_Workbook_File_Sharing.pdf" target="_blank" rel="noopener">Extra practice: LearnKey File Sharing workbook</a> <span class="meta">PDF, 317 KB</span></li><li class="xp"><a href="resources/workbooks/L09_Workbook_Cloud_Computing.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Cloud Computing workbook</a> <span class="meta">PDF, 296 KB</span></li><li class="xp opt"><a href="https://texidium.com/" target="_blank" rel="noopener">Full textbook (optional): Chapter 6 on Texidium</a></li></ul></div>
-<div class="rbox ch" id="ch7"><h3>🔒 Chapter 7: Security and Maintenance</h3>
-<p class="topics">Usernames and strong passwords · Malware: viruses, worms, Trojans, spyware, adware, ransomware · Network and Wi-Fi risks · Public computers · Social engineering and phishing · Antivirus, firewalls, HTTPS, and VPNs · Backup and restore · System Restore and factory reset · Troubleshooting basics</p><ul>
-<li class="rd">📖 <a href="chapters.html#ch=7"><b>Read: Chapter 7 Summary</b></a> <span class="meta">about 9 min</span></li>
-<li>🎮 <a href="quest.html#ch=7">Learn: 46 Quest lessons for Chapter 7</a></li>
-<li>📝 <a href="practice.html#chapter=7">Practice: Chapter 7 Quiz</a> <span class="meta">98 questions</span></li>
-<li class="xp"><a href="resources/workbooks/L06_Workbook_Computer_Software_Architecture_Part_III.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Software Architecture Part III workbook</a> <span class="meta">PDF, 293 KB</span></li><li class="xp"><a href="resources/workbooks/L07_Workbook_Backup_and_Restore.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Backup and Restore workbook</a> <span class="meta">PDF, 300 KB</span></li><li class="xp"><a href="resources/workbooks/L10_Workbook_Security.pdf" target="_blank" rel="noopener">Extra practice: LearnKey Security workbook</a> <span class="meta">PDF, 285 KB</span></li><li class="xp opt"><a href="https://texidium.com/" target="_blank" rel="noopener">Full textbook (optional): Chapter 7 on Texidium</a></li></ul></div></div></section>
-<!--CH-END-->
-<section class="res" id="resources"><h2>📚 Student Resources</h2>
-<div class="rgrid">
-<div class="rbox"><h3>📅 Class Calendar</h3><ul><li><a href="resources/Class_Calendar.pdf" target="_blank" rel="noopener">Class Calendar (Mon and Wed, 6 to 9 PM)</a> <span class="meta">PDF, 36 KB</span></li></ul></div>
-<div class="rbox"><h3>🧰 Class Tools</h3><ul>
-<li><a href="https://texidium.com/" target="_blank" rel="noopener">Texidium: your class e-textbook</a> <span class="meta">Read Chapters 1-7 here</span></li>
-<li><a href="https://quizlet.com/user/azul5477/folders/part-1" target="_blank" rel="noopener">Quizlet: class flashcard sets</a></li>
-<li><a href="https://www.liveworksheets.com/workbook/299177" target="_blank" rel="noopener">Liveworksheets: class workbook</a></li>
-<li><a href="https://bccadulteducationandtraining.typingclub.com/" target="_blank" rel="noopener">Typing Club (BCC Adult Ed)</a></li>
-<li><a href="https://kahoot.it/" target="_blank" rel="noopener">Kahoot: join a class game</a> <span class="meta">Enter the game PIN from class</span></li>
-<li><a href="https://www.gmetrix.net" target="_blank" rel="noopener">GMetrix: lesson videos and practice tests</a></li>
-</ul><p style="margin:.7rem 0 0;font-size:.85rem">Your teacher gives you the Texidium and GMetrix sign-in details in class. Never post class logins online.</p></div>
-<div class="rbox"><h3>🧠 Study Materials</h3><ul>
-<li><a href="resources/study/Student_Vocab_Flashcards.pdf" target="_blank" rel="noopener">Vocabulary Flashcards</a> <span class="meta">PDF, 91 KB</span></li>
-<li><a href="resources/study/Student_Workbook_Handouts.pdf" target="_blank" rel="noopener">Student Workbook Handouts</a> <span class="meta">PDF, 270 KB</span></li>
-<li><a href="resources/study/Student_Workbook_Handouts.docx" target="_blank" rel="noopener">Student Workbook Handouts (editable Word file)</a> <span class="meta">Word, 50 KB</span></li>
-</ul></div>
-<div class="rbox wide"><h3>📘 Extra practice: LearnKey Lesson Workbooks</h3><p>Optional extra practice that goes with the GMetrix lesson videos. Each chapter above links the workbooks that match it.</p><ol class="plain">
-<li><a href="resources/workbooks/L01_Workbook_Mobile_Devices.pdf" target="_blank" rel="noopener">LearnKey Lesson 1: Mobile Devices</a> <span class="meta">PDF, 307 KB</span></li>
-<li><a href="resources/workbooks/L02_Workbook_Hardware_Part_I.pdf" target="_blank" rel="noopener">LearnKey Lesson 2: Hardware Part I</a> <span class="meta">PDF, 491 KB</span></li>
-<li><a href="resources/workbooks/L03_Workbook_Hardware_Part_II.pdf" target="_blank" rel="noopener">LearnKey Lesson 3: Hardware Part II</a> <span class="meta">PDF, 299 KB</span></li>
-<li><a href="resources/workbooks/L04_Workbook_Computer_Software_Architecture_Part_I.pdf" target="_blank" rel="noopener">LearnKey Lesson 4: Software Architecture Part I</a> <span class="meta">PDF, 384 KB</span></li>
-<li><a href="resources/workbooks/L05_Workbook_Computer_Software_Architecture_Part_II.pdf" target="_blank" rel="noopener">LearnKey Lesson 5: Software Architecture Part II</a> <span class="meta">PDF, 289 KB</span></li>
-<li><a href="resources/workbooks/L06_Workbook_Computer_Software_Architecture_Part_III.pdf" target="_blank" rel="noopener">LearnKey Lesson 6: Software Architecture Part III</a> <span class="meta">PDF, 293 KB</span></li>
-<li><a href="resources/workbooks/L07_Workbook_Backup_and_Restore.pdf" target="_blank" rel="noopener">LearnKey Lesson 7: Backup and Restore</a> <span class="meta">PDF, 300 KB</span></li>
-<li><a href="resources/workbooks/L08_Workbook_File_Sharing.pdf" target="_blank" rel="noopener">LearnKey Lesson 8: File Sharing</a> <span class="meta">PDF, 316 KB</span></li>
-<li><a href="resources/workbooks/L09_Workbook_Cloud_Computing.pdf" target="_blank" rel="noopener">LearnKey Lesson 9: Cloud Computing</a> <span class="meta">PDF, 296 KB</span></li>
-<li><a href="resources/workbooks/L10_Workbook_Security.pdf" target="_blank" rel="noopener">LearnKey Lesson 10: Security</a> <span class="meta">PDF, 285 KB</span></li>
-</ol></div>
-</div></section>
-<section class="note"><div>
-<h3>Good to know</h3>
-<ul>
-<li id="local-note">Your progress saves on this device and in this browser only. Use the same phone or Chromebook each time so you keep your XP and scores.</li>
-<li id="cloud-note" hidden>Want your progress on any device? Tap <b>☁️ Sign in</b> and make a free class account with the class code from your teacher. It's optional.</li>
-<li>Add it to your home screen: on Chrome, tap the menu and choose "Install app" or "Add to Home screen". On iPhone, tap Share, then "Add to Home Screen".</li>
-<li>After you open each app once, it works offline too.</li>
-</ul></div></section>
 <footer><a href="teacher.html" rel="nofollow">Teacher</a></footer>
-<script>if(window.JCSync&&JCSync.enabled){document.getElementById("cloud-note").hidden=false;document.getElementById("local-note").textContent="Without an account, your progress saves on this device and in this browser only.";JCSync.attach({mount:"#acct"})}</script>
+<script>window.JC_HOME={"keys":{"quest":"ic3quest_v1","practice":"ic3lab_v1"},"sessions":[["2026-10-19","In person","Welcome + Hardware I"],["2026-10-21","In person","Hardware II + networks"],["2026-10-26","Online","Mobile Devices"],["2026-10-28","Online","Software I: operating systems"],["2026-11-02","Online","Files, permissions, file sharing"],["2026-11-04","Online","Install, troubleshoot, backup"],["2026-11-09","Online","Cloud Computing"],["2026-11-11","Online","Security"],["2026-11-16","Online","Review: Mock Exam 1"],["2026-11-18","Online","Review: Final Exam Review + Mock Exam 2"],["2026-11-23","Online","Review: Mock Exam 3 + exam-day prep"],["2026-11-25","Online","Final check + your exam plan"]],"chapters":[{"n":1,"title":"Operating Systems","lessons":[["hardware",8],["hardware",11],["hardware",18],["hardware",21],["hardware",25],["hardware",27],["software",0],["software",1],["software",2],["software",3],["software",7],["software",12],["software",22],["software",24],["software",29],["software",30],["cloud",12],["security",2],["security",3],["security",14],["security",15],["security",18],["security",19]]},{"n":2,"title":"Hardware","lessons":[["mobile",2],["mobile",12],["mobile",14],["mobile",16],["hardware",0],["hardware",1],["hardware",2],["hardware",3],["hardware",4],["hardware",5],["hardware",6],["hardware",8],["hardware",9],["hardware",10],["hardware",11],["hardware",17],["hardware",18],["hardware",19],["hardware",20],["hardware",21],["hardware",22],["hardware",23],["hardware",24],["hardware",25],["hardware",26],["hardware",27],["hardware",28],["software",24],["software",25]]},{"n":3,"title":"Networks and Mobile Devices","lessons":[["mobile",0],["mobile",1],["mobile",2],["mobile",3],["mobile",5],["mobile",6],["mobile",11],["mobile",12],["mobile",13],["mobile",14],["mobile",15],["mobile",16],["mobile",17],["hardware",6],["hardware",7],["hardware",13],["hardware",14],["hardware",15],["hardware",16],["hardware",19],["hardware",20],["hardware",21],["hardware",22],["hardware",23],["hardware",24],["hardware",25],["hardware",28],["software",15],["software",20],["software",24],["software",25],["software",30],["security",7],["security",16],["security",17],["security",18]]},{"n":4,"title":"File Management","lessons":[["mobile",16],["hardware",12],["hardware",28],["software",4],["software",8],["software",9],["software",10],["software",11],["software",12],["software",13],["software",14],["software",21],["software",22],["software",23],["software",25],["software",26],["software",27],["software",28],["software",30],["sharing",0],["sharing",1],["sharing",2],["sharing",3],["sharing",5],["sharing",6],["sharing",7],["sharing",8],["sharing",9],["sharing",10],["sharing",11],["cloud",12]]},{"n":5,"title":"Software","lessons":[["mobile",3],["mobile",4],["mobile",7],["mobile",8],["mobile",13],["mobile",15],["mobile",16],["mobile",17],["hardware",12],["hardware",25],["software",1],["software",5],["software",6],["software",16],["software",21],["software",22],["software",23],["software",26],["software",27],["software",30]]},{"n":6,"title":"Cloud Computing","lessons":[["mobile",9],["mobile",10],["mobile",13],["hardware",26],["software",23],["backup",10],["sharing",3],["sharing",4],["sharing",8],["sharing",9],["sharing",10],["cloud",0],["cloud",1],["cloud",2],["cloud",3],["cloud",4],["cloud",5],["cloud",6],["cloud",7],["cloud",8],["cloud",9],["cloud",10],["cloud",11],["cloud",12],["cloud",13]]},{"n":7,"title":"Security and Maintenance","lessons":[["mobile",12],["hardware",24],["software",15],["software",17],["software",18],["software",19],["software",20],["software",22],["software",25],["software",28],["software",30],["backup",0],["backup",1],["backup",2],["backup",3],["backup",4],["backup",5],["backup",6],["backup",7],["backup",8],["backup",9],["backup",10],["backup",11],["backup",12],["backup",13],["security",0],["security",1],["security",2],["security",3],["security",4],["security",5],["security",6],["security",7],["security",8],["security",9],["security",10],["security",11],["security",12],["security",13],["security",14],["security",15],["security",16],["security",17],["security",18],["security",19],["security",20]]}]};</script>
+<script>(function(){var H=window.JC_HOME,$=function(s){return document.querySelector(s)};
+function get(k){try{return JSON.parse(localStorage.getItem(k))||{}}catch(e){return {}}}
+function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function nowET(){var d=window.JC_NOW?new Date(window.JC_NOW):new Date();var p={};new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(d).forEach(function(x){p[x.type]=x.value});
+ return {day:p.year+'-'+p.month+'-'+p.day,min:(+p.hour)*60+(+p.minute)}}
+function nice(day){var d=new Date(day+'T12:00:00Z');return d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',timeZone:'UTC'})}
+function nextClass(){var n=nowET(),S=H.sessions;for(var i=0;i<S.length;i++){var s=S[i];if(s[0]>n.day||(s[0]===n.day&&n.min<21*60)){
+  var t=s[0]!==n.day?nice(s[0])+', 6:00 to 9:00 PM ET':(n.min>=18*60?'Class is on now (6:00 to 9:00 PM ET)':'Today, 6:00 to 9:00 PM ET');
+  return {t:t,w:s[1]==='In person'?'🏫 In person':'💻 Online',topic:s[2],k:i+1}}}
+ return null}
+function prog(){var q=get(H.keys.quest),l=get(H.keys.practice),seen=q.seen||{},best=l.best||{},rd=q.sread||[];
+ return H.chapters.map(function(c){var done=c.lessons.filter(function(p){return (seen[p[0]]||[]).indexOf(p[1])>=0}).length,b=best['ch'+c.n+':test'],tr=best['ch'+c.n+':train'];
+  var r=rd.indexOf(c.n)>=0;return {n:c.n,read:r,les:done,tot:c.lessons.length,best:b==null?null:b,train:tr==null?null:tr,complete:b!=null&&b>=80,
+   pct:((r?1:0)+(c.lessons.length?done/c.lessons.length:1)+Math.min(1,(b||0)/80))/3}})}
+function ready(){var h=(get(H.keys.practice).history||[]).filter(function(x){return x&&x.test==='final'&&x.mode==='test'});
+ var pass=h.filter(function(x){return (+x.pct||0)>=80}).length,b=h.reduce(function(m,x){return Math.max(m,+x.pct||0)},-1);return {pass:pass,best:b<0?null:b,tries:h.length}}
+function name(){var u=window.JCSync&&JCSync.user&&JCSync.user(),p=u&&JCSync.profile&&JCSync.profile();
+ var n=(p&&p.display_name)||(u&&u.user_metadata&&u.user_metadata.display_name)||'';if(!n&&u)n=(u.email||'').split('@')[0];if(!n)n=get(H.keys.quest).name||'';return String(n).trim().split(/\s+/)[0]||''}
+function li(el,y,t){el.className=y?'y':'';el.querySelector('.t').innerHTML=t}
+function render(){var P=prog(),R=ready(),nm=name();
+ $('#hi').textContent=nm?'Welcome, '+nm+'!':'Welcome!';
+ var nc=nextClass(),ne=$('#nextc');if(nc){ne.innerHTML='<b>📅 Next class: '+esc(nc.t)+'</b><span>'+esc(nc.w)+' · Class '+nc.k+' of '+H.sessions.length+': '+esc(nc.topic)+'</span>'}
+ else ne.innerHTML='<b>🎓 Our classes are finished.</b><span>Keep practicing, and schedule your IC3 exam when you are ready.</span>';
+ var tot=P.reduce(function(a,x){return a+x.pct},0)/P.length,cd=P.filter(function(x){return x.complete}).length,pc=Math.round(tot*100);
+ $('#ovbar i').style.width=pc+'%';$('#ovbar').setAttribute('aria-valuenow',pc);$('#ovpct').textContent=pc+'% done';$('#ovch').textContent=cd+' of 7 chapters complete';
+ P.forEach(function(x){var card=$('#ch'+x.n),L=card.querySelectorAll('ul.chk li');card.classList.toggle('done',x.complete);
+  li(L[0],x.read,x.read?'Summary read':'Summary: not read yet');
+  li(L[1],x.tot&&x.les>=x.tot,'Quest lessons done: <b>'+x.les+' of '+x.tot+'</b>');
+  li(L[2],x.complete,x.best!=null?'Best quiz score: <b>'+x.best+'%</b>'+(x.complete?'':' (goal: 80%)'):(x.train!=null?'Best quiz score: <b>'+x.train+'%</b> in Practice mode. Take it in Test mode to count.':'Best quiz score: none yet (goal: 80%)'));
+  card.querySelector('.read').classList.toggle('ok',x.read);card.querySelector('.play').classList.toggle('ok',x.tot&&x.les>=x.tot);card.querySelector('.quiz').classList.toggle('ok',x.complete)});
+ var ds=document.querySelectorAll('#final .dots i');for(var i=0;i<ds.length;i++)ds[i].className=R.pass>i?'y':'';
+ $('#rtxt').innerHTML=R.pass>=2?'<b>✅ You reached the goal!</b> Talk to your teacher about your exam date.':'<b>'+Math.min(R.pass,2)+' of 2</b> times at 80% or more.'+(R.best!=null?' Your best: <b>'+R.best+'%</b>.':' You have not taken it yet.');
+ // Continue: first chapter step that is not done
+ var go=null,any=P.some(function(x){return x.read||x.les||x.best!=null||x.train!=null});
+ for(var k=0;k<P.length&&!go;k++){var x=P[k];if(x.complete)continue;
+  if(!x.read)go=['chapters.html#ch='+x.n,'Chapter '+x.n+': Read the summary'];
+  else if(x.les<x.tot)go=['quest.html#ch='+x.n,'Chapter '+x.n+': Play the Quest lessons'];
+  else if(!x.complete)go=['practice.html#chapter='+x.n,'Chapter '+x.n+': Take the quiz'];}
+ if(!go)go=R.pass>=2?['practice.html#final','All chapters done! Keep your Final Exam Review score up']:['practice.html#final','All chapters done! Take the Final Exam Review'];
+ [].forEach.call(document.querySelectorAll('a.cont'),function(a){a.href=go[0];a.innerHTML='▶ '+(any?'Continue where you left off':'Start here')+'<small>'+esc(go[1])+'</small>'});
+ window.__home={prog:P,ready:R,next:nc,go:go,pct:pc}}
+window.JCHome={render:render};render();
+addEventListener('storage',render);addEventListener('pageshow',render);document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')render()});
+if(window.JCSync&&JCSync.enabled){document.getElementById('cloud-note').hidden=false;document.getElementById('local-note').textContent='Without an account, your progress saves on this device and in this browser only.';
+ JCSync.attach({mount:'#acct'});JCSync.onAuth(function(){render()})}})();</script>
 <script>if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
 </body></html>
