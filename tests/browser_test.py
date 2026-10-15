@@ -187,7 +187,7 @@ async def part2(b):
     check(len(lines) == 3 and lines[0].startswith('"Student","Status","Currently on","Last seen","Last active","Quest XP"') and 'Final D1' in lines[0], f'CSV export has header + 2 students ({d.suggested_filename})')
     await t.click('#t2'); await t.wait_for_selector('#kl .ki')
     kp = await t.inner_text('#kp'); kc = await t.evaluate('[JC_KEY.filter(x=>x.app=="quest").length,JC_KEY.filter(x=>x.app=="lab").length]')
-    check(kp == f'Showing {sum(kc)} of {sum(kc)} items' and kc[0] > 300 and kc[1] == 321, f'answer key: all items listed ({kc})')
+    check(kp == f'Showing {sum(kc)} of {sum(kc)} items' and kc[0] > 300 and kc[1] == 387, f'answer key: all items listed ({kc})')
     await t.select_option('#ka', 'lab'); await t.select_option('#kd', '7'); n7 = await t.locator('#kl .ki').count()
     check(0 < n7 < 321 and 'Practice Lab' in await t.inner_text('#kl .ki >> nth=0'), f'answer key: app + domain filter ({n7})')
     await t.fill('#kq', 'md_gsm_sim'); await t.select_option('#kd', ''); await t.wait_for_timeout(100)
