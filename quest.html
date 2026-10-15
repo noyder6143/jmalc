@@ -119,7 +119,7 @@ function mapView(){here('Level Map');const app=$('#app');app.innerHTML='';const 
 // ---------- Chapters 1-7 study path (class textbook chapters, matched to Quest lessons by official IC3 objective)
 function chapterView(sel){sel=+sel||0;const CH=D.chapters||[];here(sel?'Chapters 1-7 study path, Chapter '+sel:'Chapters 1-7 study path');const app=$('#app');
  app.innerHTML=`<div class="row"><button class="ghost" id="back">← Map</button><h2 class="sp" style="margin:0">📘 Chapters 1-7 Study Path</h2></div>
- <div class="card"><p style="margin:.2rem 0">Your class textbook has 7 chapters of Computing Fundamentals. Read each chapter in <b>Texidium</b> (your class e-textbook), then open the matching Quest lessons below, then take that chapter's quiz in the Practice Lab.</p></div>
+ <div class="card"><p style="margin:.2rem 0">Your class textbook has 7 chapters of Computing Fundamentals. Start each chapter with its <b>Chapter Summary</b> (a short read in plain language), then open the matching Quest lessons below, then take that chapter's quiz in the Practice Lab. The full textbook on Texidium is optional.</p></div>
  <div class="tabs" role="tablist">${CH.map(c=>`<button role="tab" data-c="${c.n}" class="${c.n===sel?'on':''}">${c.icon} Ch ${c.n}</button>`).join('')}</div><div id="chpane"></div>`;
  $('#back').onclick=()=>go('map');app.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>chapterView(+b.dataset.c));
  const list=sel?CH.filter(c=>c.n===sel):CH;
@@ -128,7 +128,7 @@ function chapterView(sel){sel=+sel||0;const CH=D.chapters||[];here(sel?'Chapters
   <div class="muted" style="font-size:.9rem"><b>Key topics:</b> ${esc(c.topics.join(' · '))}</div>
   ${sel?Object.keys(byL).map(lv=>{const L=D.levels.find(x=>x.id===lv);const seen=S.seen[lv]||[];return `<h4 style="margin:.8rem 0 .3rem">${L.icon} Level ${L.n}: ${esc(L.name)}</h4><div class="row" style="flex-wrap:wrap;gap:.35rem">${byL[lv].map(x=>`<button data-lv="${lv}" data-i="${x.i}">${seen.includes(x.i)?'✅ ':''}${esc(x.t)}</button>`).join('')}</div>`}).join(''):
    `<div class="muted" style="font-size:.85rem;margin-top:.4rem">${c.lessons.length} Quest lessons · ${c.quiz} Quest quiz questions match this chapter.</div>`}
-  <div class="row" style="margin-top:.8rem">${sel?'':`<button class="primary" data-c2="${c.n}">Open Chapter ${c.n} lessons</button>`}<a href="practice.html#chapter=${c.n}" style="color:var(--acc);font-weight:700">📝 Chapter ${c.n} Quiz in the Practice Lab →</a></div></div>`}).join('');
+  <div class="row" style="margin-top:.8rem"><a class="chsum" href="chapters.html#ch=${c.n}" style="background:var(--acc);color:#1a1a1a;font-weight:700;padding:.5em .9em;border-radius:12px;text-decoration:none">📖 Read: Chapter ${c.n} Summary</a>${sel?'':`<button class="primary" data-c2="${c.n}">Open Chapter ${c.n} lessons</button>`}<a href="practice.html#chapter=${c.n}" style="color:var(--acc);font-weight:700">📝 Chapter ${c.n} Quiz in the Practice Lab →</a></div></div>`}).join('');
  app.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>go('level',{id:b.dataset.lv,tab:'learn',i:+b.dataset.i}));
  app.querySelectorAll('[data-c2]').forEach(b=>b.onclick=()=>chapterView(+b.dataset.c2))}
 function lvlName(L){return 'Level '+L.n+': '+L.name}
