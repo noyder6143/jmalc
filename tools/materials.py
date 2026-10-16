@@ -49,10 +49,16 @@ SLIDES_N = {1: 34, 2: 32, 3: 35, 4: 35, 5: 30, 6: 32, 7: 69}
 ACT_FOLDER = 'https://drive.google.com/drive/folders/1NQPwvanC-28-tkWa8ZhvbFyxBEsQNpmQ'
 ACT_PDF = 'https://drive.google.com/file/d/1q-mFXPIRjQp7YhU-YBjYd2oYg0ci5rja/view?usp=drivesdk'
 ACT_DOCX = 'https://docs.google.com/document/d/17gRJLFw6AXMm6IRQ3Z6UUnS7gSM3ae11/edit?usp=drivesdk'
+# Free App Versions (tools/make_free_apps.py + make_free_apps_guide.py), Drive: 06 Fun Activities Ch 1-7 / Free App Versions
+FREE_FOLDER = 'https://drive.google.com/drive/folders/1R2lybAcPqE0iQwsxaEfmSjifP10Dkvk3'
+FREE_GUIDE = 'https://drive.google.com/file/d/12Ctg0nHkBzfSazkvic22QuodKcIfaUF-/view?usp=drivesdk'
+FREE_ZIP = 'https://drive.google.com/file/d/1ipIW_ocZrZDvDUONkjRk4Lj2Sr1PISdJ/view?usp=drivesdk'
+FREE_CH = {1: '1d0qTA2EGRyWDYtpM3KH2HLMUJm6GhJuv', 2: '1DzaqOqka-Xidyxrp8tjiye4tbC6dcTzv', 3: '1TGA8M-UfRlbQI8Tm_hheEuapZ_1rV5fs', 4: '1S9eUxXak27hIGQT-tT6HOhI6fFusec5S',
+           5: '13yCfIpeLHhT2O2dSVZhwLbOERsvcyeu_', 6: '1-0ryWfNjMtz4kBJkqLWOWs4OIIbYChTt', 7: '1Vf09LfYLtQ1M_6Taf0-i2NmTLsobj6xZ'}
 ACT_PAGES = {1: (4, 8), 2: (9, 14), 3: (15, 20), 4: (21, 27), 5: (28, 31), 6: (32, 36), 7: (37, 43)}
 
 def build(chapters):
-    out = dict(folders=[dict(t=t, u=u) for t, u in FOLDERS] + [dict(t='06 Fun Activities Ch 1-7', u=ACT_FOLDER)], key=dict(t=ANSWER_KEY[0], u=ANSWER_KEY[1]), chapters=[])
+    out = dict(folders=[dict(t=t, u=u) for t, u in FOLDERS] + [dict(t='06 Fun Activities Ch 1-7', u=ACT_FOLDER), dict(t='Free App Versions (guide + import files)', u=FREE_FOLDER)], key=dict(t=ANSWER_KEY[0], u=ANSWER_KEY[1]), chapters=[])
     for c in chapters:
         m = CH[c['n']]; L = []
         L.append(dict(k='Textbook', t=f"Lesson {c['n']} {c['title']} (textbook PDF, your copy)", u=D.format(m['text'])))
@@ -74,5 +80,9 @@ def build(chapters):
         a, b = ACT_PAGES[c['n']]; names = ', '.join(x['t'] for x in activities.A[c['n']])
         L.append(dict(k='Fun activities', t=f"Fun Activities pack, Chapter {c['n']} (PDF pages {a}-{b}): {names}", u=ACT_PDF))
         L.append(dict(k='Fun activities', t=f"Fun Activities pack (editable Word file, Chapter {c['n']} section)", u=ACT_DOCX))
+        import free_apps
+        apps = sorted({v[0] for (n, i), v in free_apps.MAP.items() if n == c['n']} | {'Kahoot', 'Blooket', 'Gimkit', 'Wayground', 'Quizlet'})
+        L.append(dict(k='Free apps', t=f"Free App Versions guide (PDF): which app for each activity, import steps, free plan limits", u=FREE_GUIDE))
+        L.append(dict(k='Free apps', t=f"Chapter {c['n']} import files: {', '.join(apps)}", u='https://drive.google.com/drive/folders/' + FREE_CH[c['n']]))
         out['chapters'].append(dict(n=c['n'], title=c['title'], icon=c['icon'], links=L))
     return out

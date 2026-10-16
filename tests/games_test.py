@@ -36,7 +36,7 @@ def static_checks():
     pages = int(re.search(r'Pages:\s+(\d+)', subprocess.run(['pdfinfo', PACK + '.pdf'], capture_output=True, text=True).stdout).group(1))
     check(pages >= 20 and all(f'Chapter {n}:' in pdf for n in range(1, 8)) and pdf.count('Printable ·') >= 15 and "Jmal C's Digital Literacy Class" in pdf, f'pack PDF: {pages} pages, 7 chapters, printable card pages, branded')
     check(all(1 <= sum(g['ch'] == n for g in GAMES) <= 2 for n in range(1, 8)) and len({g['type'] for g in GAMES}) >= 5, 'games: 1-2 per chapter, 5 game types')
-    sw = open(os.path.join(SITE, 'sw.js')).read(); check("ic3-apps-v14" in sw and "'./games.html'" in sw, 'service worker v14 caches games.html')
+    sw = open(os.path.join(SITE, 'sw.js')).read(); check(re.search(r"ic3-apps-v(1[4-9]|[2-9][0-9])", sw) and "'./games.html'" in sw, 'service worker v14 caches games.html')
     return pages
 
 PLAY = """async (opts)=>{const g=window.__games.data.games.find(x=>x.id===opts.id);const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -131,6 +131,8 @@ async def part_b(b):
         hrefs = [await a.get_attribute('href') for a in await c.locator('a').all()]
         check('Fun Activities pack, Chapter %d' % n in txt and any('1q-mFXPIRjQp7YhU-YBjYd2oYg0ci5rja' in (h or '') for h in hrefs) and any('17gRJLFw6AXMm6IRQ3Z6UUnS7gSM3ae11' in (h or '') for h in hrefs),
               f'teacher materials: chapter {n} links the Fun Activities pack (PDF + Word on Drive)')
+        check('Free App Versions guide' in txt and any('12Ctg0nHkBzfSazkvic22QuodKcIfaUF-' in (h or '') for h in hrefs) and f'Chapter {n} import files' in txt,
+              f'teacher materials: chapter {n} links the Free App Versions guide and its import-files folder')
     check(not [x for x in errs if 'pageerror' in x], 'no page errors (games cloud) ' + str([x for x in errs if 'pageerror' in x][:2]))
 
 async def main():
