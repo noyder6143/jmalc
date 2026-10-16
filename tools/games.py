@@ -82,7 +82,7 @@ GAMES = [
          ('No need to install apps', 0, 'Web apps run in a browser.'), ('Slow internet makes work slow', 1, 'Big files take time.')]),
  dict(id='c7_scam', ch=7, type='scam', icon='🎣', title='Spot the Scam', par=80,
   intro='Read each message. Is it a scam or legit?',
-  items=[('Text from 88442', 'Account alert', 'Your bank account is LOCKED. Click bit.ly/unl0ck in 1 hour or lose your money.', True, 'Urgent threat and a strange short link. Call your bank yourself.'),
+  items=[('88442 (text message)', 'Account alert', 'Your bank account is LOCKED. Click bit.ly/unl0ck in 1 hour or lose your money.', True, 'Urgent threat and a strange short link. Call your bank yourself.'),
          ('Ms. Rivera (usual school email)', 'Class tonight', 'Reminder: class is at 6 PM on Zoom. Same link as always.', False, 'Known sender, no request for money or passwords.'),
          ('prizes@win-free-phone.top', 'You WON!', 'Congratulations! You won a new iPhone. Pay $2 shipping with your card today.', True, 'Prize you never entered and a request for card details.'),
          ('Unknown number', 'Package', 'Your package is waiting. Update your address: pkg-deliv3ry.co', True, 'Unknown sender and a fake-looking web address.'),
