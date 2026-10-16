@@ -45,8 +45,14 @@ CH = {
 QUIZ_N = {1: 10, 2: 10, 3: 10, 4: 21, 5: 9, 6: 15, 7: 20}
 SLIDES_N = {1: 34, 2: 32, 3: 35, 4: 35, 5: 30, 6: 32, 7: 69}
 
+# Teacher Activity Pack (tools/activities.py -> tools/make_activity_pack.py), in Drive folder 06 Fun Activities Ch 1-7
+ACT_FOLDER = 'https://drive.google.com/drive/folders/1NQPwvanC-28-tkWa8ZhvbFyxBEsQNpmQ'
+ACT_PDF = 'https://drive.google.com/file/d/1q-mFXPIRjQp7YhU-YBjYd2oYg0ci5rja/view?usp=drivesdk'
+ACT_DOCX = 'https://docs.google.com/document/d/17gRJLFw6AXMm6IRQ3Z6UUnS7gSM3ae11/edit?usp=drivesdk'
+ACT_PAGES = {1: (4, 8), 2: (9, 14), 3: (15, 20), 4: (21, 27), 5: (28, 31), 6: (32, 36), 7: (37, 43)}
+
 def build(chapters):
-    out = dict(folders=[dict(t=t, u=u) for t, u in FOLDERS], key=dict(t=ANSWER_KEY[0], u=ANSWER_KEY[1]), chapters=[])
+    out = dict(folders=[dict(t=t, u=u) for t, u in FOLDERS] + [dict(t='06 Fun Activities Ch 1-7', u=ACT_FOLDER)], key=dict(t=ANSWER_KEY[0], u=ANSWER_KEY[1]), chapters=[])
     for c in chapters:
         m = CH[c['n']]; L = []
         L.append(dict(k='Textbook', t=f"Lesson {c['n']} {c['title']} (textbook PDF, your copy)", u=D.format(m['text'])))
@@ -64,5 +70,9 @@ def build(chapters):
         if not sq: L.append(dict(k='Study Q&A', t=f"L{c['n']} study questions: none in the folder", u=''))
         for t, u in m['kahoot']: L.append(dict(k='Kahoot', t=t + ' (Fall 2025 link, test before class)', u=u))
         for t, u in m.get('extra', []): L.append(dict(k='Worksheets', t=t, u=u))
+        import activities
+        a, b = ACT_PAGES[c['n']]; names = ', '.join(x['t'] for x in activities.A[c['n']])
+        L.append(dict(k='Fun activities', t=f"Fun Activities pack, Chapter {c['n']} (PDF pages {a}-{b}): {names}", u=ACT_PDF))
+        L.append(dict(k='Fun activities', t=f"Fun Activities pack (editable Word file, Chapter {c['n']} section)", u=ACT_DOCX))
         out['chapters'].append(dict(n=c['n'], title=c['title'], icon=c['icon'], links=L))
     return out

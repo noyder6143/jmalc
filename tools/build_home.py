@@ -52,9 +52,11 @@ main{max-width:760px;margin:-2.3rem auto 1.5rem;padding:0 .8rem;display:grid;gap
 .btns a span{font-size:1.5rem;line-height:1.1}.btns a small{font-weight:600;font-size:.78rem;opacity:.9;margin-top:.15rem}
 .btns .read{background:#1d3557;color:#fff}.btns .play{background:#ffcc33;color:#1a1a1a}.btns .quiz{background:#0f7c83;color:#fff}
 .btns a.ok{box-shadow:inset 0 0 0 3px #2ecc71}
+a.games{display:flex;align-items:center;justify-content:center;gap:.4rem;min-height:52px;margin:-.2rem 0 .7rem;border-radius:14px;background:#efe7fa;color:#4b2a85;font-weight:800;text-decoration:none;font-size:1.05rem;border:2px solid #d6c6f0}
+a.games small{font-weight:600;font-size:.82rem;opacity:.85}a.games.ok{border-color:#2ecc71}
 ul.chk{list-style:none;margin:0;padding:0;font-size:1rem}ul.chk li{display:flex;gap:.5rem;align-items:center;padding:.3rem 0;border-top:1px solid #eef2f6}ul.chk li:first-child{border-top:0}
 ul.chk .b{width:1.6rem;height:1.6rem;flex:0 0 1.6rem;border-radius:7px;border:2px solid #b9c3cf;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff}
-ul.chk li.y .b{background:#2ecc71;border-color:#2ecc71}ul.chk li.y .b::after{content:"✓"}
+ul.chk li.gm.y .b{background:#7a4fb5;border-color:#7a4fb5}ul.chk li.gm.y .b::after{content:"★"}ul.chk li.y .b{background:#2ecc71;border-color:#2ecc71}ul.chk li.y .b::after{content:"✓"}
 .ready{display:flex;gap:.8rem;align-items:center;margin:.3rem 0 .7rem}.dots{display:flex;gap:.4rem}.dots i{width:2.2rem;height:2.2rem;border-radius:50%;border:3px solid #b9c3cf;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;color:#fff}
 .dots i.y{background:#2ecc71;border-color:#2ecc71}.dots i.y::after{content:"✓"}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
@@ -82,7 +84,7 @@ function nextClass(){var n=nowET(),S=H.sessions;for(var i=0;i<S.length;i++){var 
  return null}
 function prog(){var q=get(H.keys.quest),l=get(H.keys.practice),seen=q.seen||{},best=l.best||{},rd=q.sread||[];
  return H.chapters.map(function(c){var done=c.lessons.filter(function(p){return (seen[p[0]]||[]).indexOf(p[1])>=0}).length,b=best['ch'+c.n+':test'],tr=best['ch'+c.n+':train'];
-  var r=rd.indexOf(c.n)>=0;return {n:c.n,read:r,les:done,tot:c.lessons.length,best:b==null?null:b,train:tr==null?null:tr,complete:b!=null&&b>=80,
+  var r=rd.indexOf(c.n)>=0;return {n:c.n,games:c.games,read:r,les:done,tot:c.lessons.length,best:b==null?null:b,train:tr==null?null:tr,complete:b!=null&&b>=80,
    pct:((r?1:0)+(c.lessons.length?done/c.lessons.length:1)+Math.min(1,(b||0)/80))/3}})}
 function ready(){var h=(get(H.keys.practice).history||[]).filter(function(x){return x&&x.test==='final'&&x.mode==='test'});
  var pass=h.filter(function(x){return (+x.pct||0)>=80}).length,b=h.reduce(function(m,x){return Math.max(m,+x.pct||0)},-1);return {pass:pass,best:b<0?null:b,tries:h.length}}
@@ -99,6 +101,8 @@ function render(){var P=prog(),R=ready(),nm=name();
   li(L[0],x.read,x.read?'Summary read':'Summary: not read yet');
   li(L[1],x.tot&&x.les>=x.tot,'Quest lessons done: <b>'+x.les+' of '+x.tot+'</b>');
   li(L[2],x.complete,x.best!=null?'Best quiz score: <b>'+x.best+'%</b>'+(x.complete?'':' (goal: 80%)'):(x.train!=null?'Best quiz score: <b>'+x.train+'%</b> in Practice mode. Take it in Test mode to count.':'Best quiz score: none yet (goal: 80%)'));
+  var cg=get(H.keys.quest),gp=x.games.filter(function(id){return (cg.cgn||{})[id]}),gs=x.games.map(function(id){return (cg.cgs||{})[id]||0});
+  li(L[3],gp.length>0,'Games played: <b>'+gp.length+' of '+x.games.length+'</b>'+(gp.length?' · best '+gs.map(function(n){return n?'⭐'.repeat(n):'☆'}).join(' '):''));card.querySelector('a.games').classList.toggle('ok',gp.length===x.games.length);
   card.querySelector('.read').classList.toggle('ok',x.read);card.querySelector('.play').classList.toggle('ok',x.tot&&x.les>=x.tot);card.querySelector('.quiz').classList.toggle('ok',x.complete)});
  var ds=document.querySelectorAll('#final .dots i');for(var i=0;i<ds.length;i++)ds[i].className=R.pass>i?'y':'';
  $('#rtxt').innerHTML=R.pass>=2?'<b>✅ You reached the goal!</b> Talk to your teacher about your exam date.':'<b>'+Math.min(R.pass,2)+' of 2</b> times at 80% or more.'+(R.best!=null?' Your best: <b>'+R.best+'%</b>.':' You have not taken it yet.');
@@ -116,9 +120,9 @@ addEventListener('storage',render);addEventListener('pageshow',render);document.
 if(window.JCSync&&JCSync.enabled){document.getElementById('cloud-note').hidden=false;document.getElementById('local-note').textContent='Without an account, your progress saves on this device and in this browser only.';
  JCSync.attach({mount:'#acct'});JCSync.onAuth(function(){render()})}})();"""
 
-def build(chapters, minutes, lessons, quizn, workbooks):
+def build(chapters, minutes, lessons, quizn, workbooks, games):
     data = dict(keys=dict(quest='ic3quest_v1', practice='ic3lab_v1'), sessions=SESSIONS,
-                chapters=[dict(n=c['n'], title=c['title'], lessons=lessons[c['n']]) for c in chapters])
+                chapters=[dict(n=c['n'], title=c['title'], lessons=lessons[c['n']], games=games[c['n']]) for c in chapters])
     cards = []
     for c in chapters:
         n = c['n']
@@ -129,9 +133,11 @@ def build(chapters, minutes, lessons, quizn, workbooks):
             f'<div class="btns"><a class="read" href="chapters.html#ch={n}"><span aria-hidden="true">📖</span>Read<small>Summary</small></a>'
             f'<a class="play" href="quest.html#ch={n}"><span aria-hidden="true">🎮</span>Play<small>Quest lessons</small></a>'
             f'<a class="quiz" href="practice.html#chapter={n}"><span aria-hidden="true">📝</span>Quiz<small>Get 80%</small></a></div>'
+            f'<a class="games" href="games.html#ch={n}"><span aria-hidden="true">🎲</span> Games <small>{len(games[n])} quick games</small></a>'
             f'<ul class="chk" aria-label="Chapter {n} checklist"><li><span class="b" aria-hidden="true"></span><span class="t">Summary: not read yet</span></li>'
             f'<li><span class="b" aria-hidden="true"></span><span class="t">Quest lessons done: 0 of {len(lessons[n])}</span></li>'
-            f'<li><span class="b" aria-hidden="true"></span><span class="t">Best quiz score: none yet (goal: 80%)</span></li></ul></section>')
+            f'<li><span class="b" aria-hidden="true"></span><span class="t">Best quiz score: none yet (goal: 80%)</span></li>'
+            f'<li class="gm"><span class="b" aria-hidden="true"></span><span class="t">Games played: 0 of {len(games[n])}</span></li></ul></section>')
     tools = ''.join(f'<li><a href="{u}" target="_blank" rel="noopener"><span class="e" aria-hidden="true">{e}</span><span><b>{E(t)}</b><small>{E(d)}</small></span></a></li>' for u, e, t, d in TOOLS)
     wbs = ''.join(f'<li><a href="resources/workbooks/{f}" target="_blank" rel="noopener">LearnKey Lesson {i}: {E(t)}</a> <span class="meta">Chapter {", ".join(map(str, chs))} · PDF, {kb("resources/workbooks/" + f)}</span></li>'
                   for i, (f, t, chs) in enumerate(workbooks, 1))

@@ -123,7 +123,7 @@ async def part_b(b):
     await t.goto(BASE + 'teacher.html'); await t.wait_for_selector('#tb')
     cls = await t.inner_text('#chcls'); check('Ch 2: Hardware' in cls and '100%' in cls, 'teacher: class progress by chapter card')
     await t.click('#tb tbody tr[data-id]'); det = await t.inner_text('tr.det')
-    check('By textbook chapter' in det and re.search(r'Ch 2: Hardware\s+Not yet\s+100%\s+100%', det), 'teacher: student detail shows Chapter 2 quiz and lab accuracy')
+    check('By textbook chapter' in det and re.search(r'Ch 2: Hardware\s+Not yet\s+0/2\s+100%\s+100%', det), 'teacher: student detail shows Chapter 2 quiz and lab accuracy')
     check(re.search(r'Ch 2: Hardware.*\(1/\d+\)', det, re.S) is not None, 'teacher: Quest lessons read per chapter')
     await t.screenshot(path=SHOTS + 'ch_teacher_dash.png', full_page=True)
     # Teaching Materials tab

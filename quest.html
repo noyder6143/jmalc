@@ -225,7 +225,7 @@ function fromHash(){const m=/ch=(\d)/.exec(location.hash||'');if(m&&(D.chapters|
 hdr();if(!fromHash())go('map');addEventListener('hashchange',fromHash);
 window.__quest={state:()=>S,data:D,go};
 // Optional cloud accounts (sync.js on the class site). Without it, progress stays on this device.
-addEventListener('storage',e=>{if(e.key!==KEY)return;try{const v=JSON.parse(e.newValue);if(v&&Array.isArray(v.sread)){S.sread=[...new Set([...(S.sread||[]),...v.sread])].sort((a,b)=>a-b)}}catch(x){}});// summaries marked read on chapters.html in another tab
+addEventListener('storage',e=>{if(e.key!==KEY)return;try{const v=JSON.parse(e.newValue);if(v&&Array.isArray(v.sread)){S.sread=[...new Set([...(S.sread||[]),...v.sread])].sort((a,b)=>a-b)};if(v)['cg','cgp','cgs','cgn'].forEach(k=>{if(v[k]&&typeof v[k]==='object'){S[k]=S[k]||{};Object.keys(v[k]).forEach(id=>{S[k][id]=Math.max(+S[k][id]||0,+v[k][id]||0)})}})}catch(x){}});// summaries marked read on chapters.html in another tab
 if(window.JCSync)JCSync.attach({app:'quest',mount:'.hstat',get:()=>S,set:v=>{S=Object.assign(blank(),v);save();hdr();if(VIEW==='map'||VIEW==='badges')go(VIEW)}});
 if(window.JCSync)JCSync.onAuth(()=>{hdr();if(VIEW==='map')go('map')});
 })();

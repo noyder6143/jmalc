@@ -45,6 +45,7 @@
     o.xp = num(L.xp, C.xp); o.flips = num(L.flips, C.flips); o.boss = num(L.boss, C.boss);
     o.quiz = maxMap(L.quiz, C.quiz); o.qok = maxMap(L.qok, C.qok);
     o.games = maxMap(L.games, C.games); o.sims = maxMap(L.sims, C.sims);
+    o.cg = maxMap(L.cg, C.cg); o.cgp = maxMap(L.cgp, C.cgp); o.cgs = maxMap(L.cgs, C.cgs); o.cgn = maxMap(L.cgn, C.cgn); // chapter games: best %, points, stars, plays
     o.seen = unionMap(L.seen, C.seen); o.mission = orMap(L.mission, C.mission);
     o.badges = union(L.badges, C.badges);
     o.sread = union(L.sread, C.sread).filter(function (n) { return typeof n === "number"; }).sort(function (a, b) { return a - b; }); // chapter summaries marked read

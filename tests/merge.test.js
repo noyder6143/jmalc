@@ -48,4 +48,6 @@ eq(J.attemptRows([pL.history[0], fin], '2026-10-04T00:00:00Z'), [{ test_id: 'fin
 eq(J.attemptRows([pL.history[0]], '').length, 1, 'all rows with empty watermark');
 eq(J.merge.quest({ sread: [3, 1] }, { sread: [2, 3] }).sread, [1, 2, 3], 'summary read: union of chapters, sorted');
 eq(J.merge.quest({}, null).sread, [], 'summary read: empty by default');
+eq(J.merge.quest({ cg: { c1_match: 80 }, cgn: { c1_match: 3 } }, { cg: { c1_match: 90, c2_sort: 50 }, cgn: { c1_match: 1 } }).cg, { c1_match: 90, c2_sort: 50 }, 'chapter games: best score kept per game');
+eq(J.merge.quest({ cgn: { c1_match: 3 } }, { cgn: { c1_match: 1 } }).cgn, { c1_match: 3 }, 'chapter games: plays merge');
 console.log('merge tests: ' + n + ' passed');

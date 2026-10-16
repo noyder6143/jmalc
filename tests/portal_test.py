@@ -125,7 +125,7 @@ async def main():
         try: socket.create_connection(('127.0.0.1', PORT), .2).close(); break
         except OSError: time.sleep(.1)
     try:
-        sw = open(os.path.join(SITE, 'sw.js')).read(); check("ic3-apps-v13" in sw, 'service worker cache bumped to v13')
+        sw = open(os.path.join(SITE, 'sw.js')).read(); check(re.search(r"ic3-apps-v(1[3-9]|[2-9][0-9])", sw) is not None, "service worker cache bumped (v13 or later)")
         async with async_playwright() as pw:
             b = await pw.chromium.launch(executable_path='/usr/bin/google-chrome'); await part_a(b); await part_b(b); await b.close()
     finally:
