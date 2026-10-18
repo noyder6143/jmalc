@@ -8,13 +8,15 @@ from html import escape as E
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Class schedule (from resources/Class_Calendar.pdf). All classes Mon/Wed 6:00-9:00 PM ET.
+# Cycle 1 (BCC welcome letter): 11 sessions, Oct 19 to Nov 23, 2026. No class Nov 25.
+ZOOM = 'https://us02web.zoom.us/j/85858495143'
 SESSIONS = [
     ('2026-10-19', 'In person', 'Welcome + Hardware I'), ('2026-10-21', 'In person', 'Hardware II + networks'),
     ('2026-10-26', 'Online', 'Mobile Devices'), ('2026-10-28', 'Online', 'Software I: operating systems'),
     ('2026-11-02', 'Online', 'Files, permissions, file sharing'), ('2026-11-04', 'Online', 'Install, troubleshoot, backup'),
     ('2026-11-09', 'Online', 'Cloud Computing'), ('2026-11-11', 'Online', 'Security'),
     ('2026-11-16', 'Online', 'Review: Mock Exam 1'), ('2026-11-18', 'Online', 'Review: Final Exam Review + Mock Exam 2'),
-    ('2026-11-23', 'Online', 'Review: Mock Exam 3 + exam-day prep'), ('2026-11-25', 'Online', 'Final check + your exam plan'),
+    ('2026-11-23', 'Online', 'Review: Mock Exam 3 + exam-day prep'),
 ]
 TOOLS = [
     ('https://quizlet.com/user/azul5477/folders/part-1', '🃏', 'Quizlet', 'Class flashcards'),
@@ -35,7 +37,7 @@ header{background:linear-gradient(120deg,#1d3557,#0f7c83);color:#fff;padding:1re
 #acct{flex:0 0 auto}#acct .jcs-chip{font-size:1rem;padding:.55em 1em;min-height:44px}
 .hello{max-width:760px;margin:1rem auto 0}.hello h1{margin:0;font-size:clamp(1.6rem,6vw,2.3rem);line-height:1.2}.hello p{margin:.3rem 0 0;opacity:.95}
 .next{margin-top:.9rem;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:.7rem .9rem}
-.next b{display:block;font-size:1.08rem}.next span{display:block;opacity:.95;font-size:.95rem}
+.next b{display:block;font-size:1.08rem}.next span{display:block;opacity:.95;font-size:.95rem}.next a{color:#fff;font-weight:800;text-decoration:underline}
 main{max-width:760px;margin:-2.3rem auto 1.5rem;padding:0 .8rem;display:grid;gap:1rem}
 .card{background:#fff;border-radius:18px;padding:1.1rem;box-shadow:0 6px 20px rgba(20,32,46,.1)}
 .card h2{margin:0 0 .5rem;font-size:1.3rem;color:#1d3557}
@@ -80,7 +82,7 @@ function nowET(){var d=window.JC_NOW?new Date(window.JC_NOW):new Date();var p={}
 function nice(day){var d=new Date(day+'T12:00:00Z');return d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',timeZone:'UTC'})}
 function nextClass(){var n=nowET(),S=H.sessions;for(var i=0;i<S.length;i++){var s=S[i];if(s[0]>n.day||(s[0]===n.day&&n.min<21*60)){
   var t=s[0]!==n.day?nice(s[0])+', 6:00 to 9:00 PM ET':(n.min>=18*60?'Class is on now (6:00 to 9:00 PM ET)':'Today, 6:00 to 9:00 PM ET');
-  return {t:t,w:s[1]==='In person'?'🏫 In person':'💻 Online',topic:s[2],k:i+1}}}
+  return {t:t,w:s[1]==='In person'?'🏫 In person':'💻 Online',topic:s[2],k:i+1,online:s[1]==='Online'}}}
  return null}
 function prog(){var q=get(H.keys.quest),l=get(H.keys.practice),seen=q.seen||{},best=l.best||{},rd=q.sread||[];
  return H.chapters.map(function(c){var done=c.lessons.filter(function(p){return (seen[p[0]]||[]).indexOf(p[1])>=0}).length,b=best['ch'+c.n+':test'],tr=best['ch'+c.n+':train'];
@@ -93,7 +95,8 @@ function name(){var u=window.JCSync&&JCSync.user&&JCSync.user(),p=u&&JCSync.prof
 function li(el,y,t){el.className=y?'y':'';el.querySelector('.t').innerHTML=t}
 function render(){var P=prog(),R=ready(),nm=name();
  $('#hi').textContent=nm?'Welcome, '+nm+'!':'Welcome!';
- var nc=nextClass(),ne=$('#nextc');if(nc){ne.innerHTML='<b>📅 Next class: '+esc(nc.t)+'</b><span>'+esc(nc.w)+' · Class '+nc.k+' of '+H.sessions.length+': '+esc(nc.topic)+'</span>'}
+ var nc=nextClass(),ne=$('#nextc');if(nc){var z=nc.online?' · <a href="'+H.zoom+'" target="_blank" rel="noopener">Join Zoom</a>':'';
+  ne.innerHTML='<b>📅 Next class: '+esc(nc.t)+'</b><span>'+esc(nc.w)+' · Class '+nc.k+' of '+H.sessions.length+': '+esc(nc.topic)+z+'</span>'}
  else ne.innerHTML='<b>🎓 Our classes are finished.</b><span>Keep practicing, and schedule your IC3 exam when you are ready.</span>';
  var tot=P.reduce(function(a,x){return a+x.pct},0)/P.length,cd=P.filter(function(x){return x.complete}).length,pc=Math.round(tot*100);
  $('#ovbar i').style.width=pc+'%';$('#ovbar').setAttribute('aria-valuenow',pc);$('#ovpct').textContent=pc+'% done';$('#ovch').textContent=cd+' of 7 chapters complete';
@@ -121,7 +124,7 @@ if(window.JCSync&&JCSync.enabled){document.getElementById('cloud-note').hidden=f
  JCSync.attach({mount:'#acct'});JCSync.onAuth(function(){render()})}})();"""
 
 def build(chapters, minutes, lessons, quizn, workbooks, games):
-    data = dict(keys=dict(quest='ic3quest_v1', practice='ic3lab_v1'), sessions=SESSIONS,
+    data = dict(keys=dict(quest='ic3quest_v1', practice='ic3lab_v1'), zoom=ZOOM, sessions=SESSIONS,
                 chapters=[dict(n=c['n'], title=c['title'], lessons=lessons[c['n']], games=games[c['n']]) for c in chapters])
     cards = []
     for c in chapters:
@@ -152,7 +155,7 @@ def build(chapters, minutes, lessons, quizn, workbooks, games):
 <style>{CSS}</style></head><body>
 <header><div class="top"><div class="brand">Jmal C's Digital Literacy Class</div><div id="acct"></div></div>
 <div class="hello"><h1 id="hi">Welcome!</h1><p>IC3 Computing Fundamentals, Chapters 1 to 7. Each chapter has 3 steps: Read, Play, Quiz.</p>
-<div class="next" id="nextc" role="status"><b>📅 Classes: Monday and Wednesday, 6:00 to 9:00 PM ET</b><span>October 19 to November 25. Week 1 is in person. The other weeks are online.</span></div></div></header>
+<div class="next" id="nextc" role="status"><b>📅 Classes: Monday and Wednesday, 6:00 to 9:00 PM ET</b><span>October 19 to November 23. Week 1 is in person. From October 26, class is on <a href="{ZOOM}" target="_blank" rel="noopener">Zoom</a>.</span></div></div></header>
 <main>
 <section class="card" id="progress" aria-labelledby="pgh"><h2 id="pgh">📈 My progress</h2>
 <div class="bar" id="ovbar" role="progressbar" aria-label="Progress in Chapters 1 to 7" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
@@ -170,7 +173,8 @@ def build(chapters, minutes, lessons, quizn, workbooks, games):
 <ul class="tools">{tools}</ul>
 <p class="small" style="margin:.6rem 0 0">Never post class logins online.</p>
 <h2 style="margin-top:1.1rem">📅 Calendar</h2>
-<div class="row2"><a class="btn b3" href="resources/Class_Calendar.pdf" target="_blank" rel="noopener">📅 Class Calendar (PDF)</a><a class="btn b3" href="resources/Chapter_Summaries_Ch1-7.pdf" target="_blank" rel="noopener">📖 All summaries (PDF)</a></div>
+<div class="row2"><a class="btn b3" href="resources/Class_Calendar.pdf" target="_blank" rel="noopener">📅 Class Calendar (PDF)</a><a class="btn b2" href="{ZOOM}" target="_blank" rel="noopener">💻 Join Zoom (from Oct 26)</a></div>
+<div class="row2" style="margin-top:.5rem"><a class="btn b3" href="resources/Chapter_Summaries_Ch1-7.pdf" target="_blank" rel="noopener">📖 All summaries (PDF)</a></div>
 <h2 style="margin-top:1.1rem">📂 More practice</h2>
 <div class="row2" style="margin-bottom:.6rem"><a class="btn b3" href="quest.html">🗺️ Full Quest map</a><a class="btn b3" href="practice.html">🧪 Practice Lab</a></div>
 <details class="x" id="extra"><summary>➕ Extra practice: LearnKey workbooks (10)</summary>

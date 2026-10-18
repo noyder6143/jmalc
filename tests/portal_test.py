@@ -44,6 +44,8 @@ async def part_a(b):
     for host, nm in [('texidium.com', 'Texidium (optional)'), ('quizlet.com', 'Quizlet'), ('kahoot.it', 'Kahoot'), ('typingclub.com', 'Typing Club'), ('liveworksheets.com', 'Liveworksheets')]:
         a = p.locator(f'#resources ul.tools a[href*="{host}"]'); check(await a.count() == 1 and nm in await a.inner_text(), f'tools: {nm}')
     check(await p.locator('#resources a[href="resources/Class_Calendar.pdf"]').count() == 1, 'calendar link')
+    check(await p.locator('#resources a[href="https://us02web.zoom.us/j/85858495143"]').count() == 1, 'Join Zoom button in Class Tools')
+    check(await p.evaluate('JC_HOME.sessions.length') == 11 and await p.evaluate('JC_HOME.sessions.at(-1)[0]') == '2026-11-23', 'home: 11 sessions ending Nov 23')
     ex = p.locator('details#extra'); check(await ex.count() == 1 and await ex.get_attribute('open') is None and not await ex.locator('ol').is_visible(), 'extra practice: collapsed')
     check(await ex.locator('a[href^="resources/workbooks/"]').count() == 10, 'extra practice: 10 LearnKey workbooks')
     await ex.locator('summary').click(); check(await ex.locator('ol').is_visible(), 'extra practice: opens on tap')
@@ -52,10 +54,15 @@ async def part_a(b):
     await p.screenshot(path='/workspace/portal_shots/home_desktop_local.png', full_page=True)
     await c.close()
     # Next-class states
-    for now, want in [('2026-10-26T23:30:00Z', ('Class is on now', 'Online')), ('2026-10-26T15:00:00Z', ('Today, 6:00 to 9:00 PM ET', 'Online')),
-                      ('2026-10-22T02:30:00Z', ('Monday, October 26', 'Online')), ('2026-11-26T15:00:00Z', ('classes are finished', ''))]:
+    for now, want in [('2026-10-26T23:30:00Z', ('Class is on now', 'Online', 'Join Zoom')), ('2026-10-26T15:00:00Z', ('Today, 6:00 to 9:00 PM ET', 'Online', 'Join Zoom')),
+                      ('2026-10-22T02:30:00Z', ('Monday, October 26', 'Online', 'Join Zoom', 'of 11')), ('2026-10-15T22:00:00Z', ('Monday, October 19', 'In person', 'of 11')),
+                      ('2026-11-24T15:00:00Z', ('classes are finished',))]:
         c = await dev(b); await c.add_init_script(f"window.JC_NOW={json.dumps(now)}"); q = await c.new_page(); await q.goto(BASE)
-        t = await q.inner_text('#nextc'); check(all(w in t for w in want), f'next class at {now}: {t.splitlines()[0]!r}'); await c.close()
+        t = await q.inner_text('#nextc'); check(all(w in t for w in want), f'next class at {now}: {t.splitlines()[0]!r}')
+        if 'Join Zoom' in want:
+            href = await q.eval_on_selector('#nextc a', 'a => a && a.href')
+            check(href == 'https://us02web.zoom.us/j/85858495143', f'next class Zoom link at {now}: {href!r}')
+        await c.close()
     # Seeded progress: Ch 1 complete, Ch 2 read + some lessons, final 80%+ twice
     c = await dev(b, viewport={'width': 1280, 'height': 900}); p = await c.new_page(); watch(p, errs, ext)
     await p.goto(BASE); L = await p.evaluate('JC_HOME.chapters.map(c=>c.lessons)')
